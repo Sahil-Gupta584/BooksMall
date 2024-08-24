@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import Card from "./Card";
-import { database } from "../appwrite/api";
 
 function ShowCards() {
     const [imgUrls, setImgUrls] = useState([]);

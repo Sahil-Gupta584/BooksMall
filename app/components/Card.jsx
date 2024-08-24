@@ -1,6 +1,3 @@
-import Image from 'next/image'
-import CoffeeTable from "../../public/categories-img/CoffeeTable.png";
-
 
 function Card(props) {
     return (

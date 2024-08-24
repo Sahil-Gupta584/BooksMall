@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "./components/Nav";
+import { SocketProvider } from "./context/socketContext";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -16,8 +17,11 @@ export default async function RootLayout({ children }) {
     <html lang="en" data-theme="light" className="bg-[#f3eaea]">
       <body className={inter.className}>
         
+        <SocketProvider>
         <Nav />
+          
         {children}
+        </SocketProvider>
       </body>
     </html>
   );

@@ -1,24 +1,48 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getBook } from '@/app/appwrite/api';
+import { getBook, verifyLogin } from '@/app/appwrite/api';
 import Carousel from '@/app/components/Carousel/Carousel';
 import conditionIcon from '@/public/categories-img/conditionIco.webp';
 import categoryIcon from '@/public/categoryIcon.png';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function Component({ params }) {
+export default function Page({ params }) {
     const [bookData, setBookData] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
-        console.log(params)
-        getBook(params.bookId).then(res => {
-            console.log(res);
-            setBookData(res);
-        });
-    }, [params]);
+        async function fetch() {
+            try {
+                const book = await getBook(params.bookId);
+                setBookData(book);
+                const user = await verifyLogin();
+                console.log('user:', user);
+                console.log('book;', book);
+                setCurrentUserId(user.$id);
+                
+                console.log('seller;', book.seller);
+            } catch (error) {
+                console.error("Error fetching data from bookid:", error);
+            }
+        }
+        fetch();
+    }, [params.bookId]);
 
     if (!bookData) {
         return <div className="loading universal loading-spinner h-[91vh] w-[100vw]"></div>;
     }
+
+    const handleChatWithSeller = async () => {
+        const currentUser = await verifyLogin()
+        if (currentUser) {
+            router.push(`/chat?chatId=${currentUserId}-${bookData.seller.$id}`);
+        } else {
+            router.push('/auth');
+        }
+    };
+
 
 
     return (
@@ -70,9 +94,16 @@ export default function Component({ params }) {
                 <div className="md:col-span-1">
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <h2 className="text-3xl font-bold mb-4">₹ {bookData.price}</h2>
-                        <button className="w-full bg-[#d97f02] hover:bg-[#bd6f02] text-white font-bold py-2 px-4 rounded mb-4">
-                            Make offer
-                        </button>
+                        <Link href={`/chat/${currentUserId}-${bookData.seller.$id}`}>
+                        {currentUserId && currentUserId !== bookData.seller.$id && (
+                            <button
+                                onClick={handleChatWithSeller}
+                                className="w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded"
+                            >
+                                Chat With Seller
+                            </button>
+                        )}
+                        </Link>
                     </div>
                 </div>
                 <div className="md:col-span-1">
@@ -89,13 +120,20 @@ export default function Component({ params }) {
                             </h2>
                         </div>
 
-                        <button className="w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded">
-                            Chat with seller
-                        </button>
-                        
+                        {currentUserId && currentUserId !== bookData.seller.$id && (
+                            <button
+                                onClick={handleChatWithSeller}
+                                className="w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded"
+                            >
+                                Chat With Seller
+                            </button>
+                        )}
+
                     </div>
                 </div>
             </div>
+
         </div>
+
     );
 }

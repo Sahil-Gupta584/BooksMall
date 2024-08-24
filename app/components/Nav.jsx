@@ -2,23 +2,25 @@
 import { useEffect, useState } from "react";
 import SellBtn from "./Sellbtn/SellBtn";
 import { usePathname, useRouter } from "next/navigation";
-import { account } from "../appwrite/api";
+import { account, getUser, verifyLogin } from "../appwrite/api";
 import Link from "next/link";
 function Nav() {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [user, setUser] = useState(null)
     const pathname = usePathname();
     const router = useRouter();
     useEffect(() => {
-        console.log("triggered");
-        account
-            .get()
-            .then((res) => {
-                console.log(res, "from account.get()");
-                setLoggedIn(true);
-            })
-            .catch((err) => err);
+        async function fetch() {
+            const res = await verifyLogin();
+            if (res) {
+                setLoggedIn(true)
+                const user = await getUser(res.$id);
+                setUser(user);
+            }
+        }
+        fetch();
 
-    }, []);
+    }, [router]);
 
 
     return (
@@ -94,6 +96,18 @@ function Nav() {
                             ) :
                             (
                                 <>
+                                    <div className="flex">
+                                        <div className="avatar">
+                                            <div className="w-12 rounded-full">
+                                                <img src={user?.avatarUrl} />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h2 className="font-bold">{user?.name}</h2>
+                                            <span>{user?.email}</span>
+
+                                        </div>
+                                    </div>
                                     <li className="px-2 hover:text-[grey] hover:cursor-pointer">
                                         <Link href='/myselling' prefetch>
                                             My sellings

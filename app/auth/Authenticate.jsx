@@ -2,35 +2,28 @@
 import { useEffect, useState } from 'react';
 import styles from './Auth.module.css';
 import { account, verifyLogin, createUser } from '../appwrite/api';
-import LoadingBtn from '../components/LoadingBtn';
-import { ID } from 'appwrite';
 import { useRouter } from 'next/navigation';
 
-function Authenticate({params}) {
+function Authenticate({ params }) {
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false)
 
     const router = useRouter();
-useEffect(()=>{
+    useEffect(() => {
 
-    let user;
-    verifyLogin().then((res) => {
-        
-        // console.log(res)
-        user = res
-        // router.push('/')
-        
-    }).catch(err => console.log(err));
+        async function fetch(params) {
+            const user = await verifyLogin();
+            if (user) {
+                console.log('redirecting fro login');
+                router.push('/')
+            }
+        }
+        fetch()
 
-    console.log(user);
-    if (user) {
-        console.log('redirecting fro login');
-        router.push('/')
-    }
-},[params,router])
-    
+    }, [params, router])
+
 
 
     const handleSubmit = async (e, type) => {
@@ -49,18 +42,19 @@ useEffect(()=>{
                 console.log('res;', res);
                 console.log('Logged in successfully');
                 const { original } = router?.query || {};
-                router.push(original ? `/${original}` :  '/');
-                
+                router.push(original ? `/${original}` : '/');
+
             } else if (type == 'signup') {
                 const res = await createUser(email, password, name);
                 console.log(res)
-                if(res){
+                if (res) {
 
                     console.log('Signed up successfully');
                     const { original } = router?.query || {};
-                    router.push(original ? `/${original}` :  '/');
+                    router.push(original ? `/${original}` : '/');
                 }
-            }
+                if(!res) setError("failed");
+        }
         } catch (err) {
             console.log(err.message, err);
             setError(err.message);
@@ -87,7 +81,7 @@ useEffect(()=>{
                                 Show Password
                             </label>
                         </div>
-                        <button type="submit" className={styles.btn} disabled={loading}> {loading ? <div className="loading loading-spinner"></div>: 'Login'} </button>
+                        <button type="submit" className={styles.btn} disabled={loading}> {loading ? <div className="loading loading-spinner"></div> : 'Login'} </button>
                     </form>
                     {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
                     <span className={styles.switch}>

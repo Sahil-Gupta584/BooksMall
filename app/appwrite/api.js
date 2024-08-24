@@ -1,21 +1,9 @@
 
+import { Query } from "appwrite";
 import { ID,account,database,storage,avatar,appwriteConfig } from "./config";
-
-// const client = new Client();
-
-// client
-//   .setEndpoint("https://cloud.appwrite.io/v1")
-//   .setProject("668eac7d0018f544390f");
-
-// const account = new Account(client);
-// const storage = new Storage(client);
-// const database = new Databases(client);
-// const avatar = new Avatars(client);
-
 
 export async function verifyLogin() {
   try {
-    // const { account } = await createSessionClient();
     return await account.get();
   } catch (error) {
     console.log(error.message, error, 'from verifylogin')
@@ -50,7 +38,7 @@ export function getFilePreview(fileId) {
     console.log(fileUrl, "from getFilePreview");
     return fileUrl.href;
   } catch (error) {
-    console.log(error);
+    console.log(error,'from getFilePreview');
   }
 }
 
@@ -151,13 +139,109 @@ export async function createUser(email, password, name) {
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId, 
       user.$id, 
-      { name, avatarUrl }
+      { name, avatarUrl,email }
     );
     console.log(res);
     return res;
   } catch (error) {
-    console.log(error, 'from saveUser');
+    console.log(error, 'from createUser');
     return false;
   }
 }
+
+export async function getChatPartners(currentUserId) {
+  console.log('currentUserId: ', currentUserId);
+
+  try {
+    const res = await database.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      currentUserId ||currentUserId.$id
+    );
+    const partners = res.chatPartners.map(async (p,i)=> await getUser(p))
+    console.log(res)
+    return Promise.all(partners)
+  } catch (error) {
+    console.log(error,'from getChatPartners')
+  }
+}
+
+export async function addChatPartner(currentUserId,partnerId) {
+  console.log('addingpartner')
+  try {
+    
+    const res = await database.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      currentUserId
+    )
+
+    console.log(res)
+    await database.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      currentUserId,
+      {
+        chatPartners: [...res.chatPartners ,partnerId]
+      }
+    )
+  } catch (error) {
+   console.log(error,'from addChatPartner'); 
+  }
+}
+
+export async function getUser(Id) {
+  try {
+    
+    return await database.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      Id
+    )
+  } catch (error) {
+   console.log(error,'from getUser'); 
+  }
+}
+
+// Add these functions to appwrite/api.js
+
+export async function saveMessage(senderId, receiverId, content) {
+  try {
+    const message = await database.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.chatCollectionId,
+      ID.unique(),
+      {
+        senderId,
+        receiverId,
+        content,
+        timestamp: Date.now()
+      }
+    );
+    return message;
+  } catch (error) {
+    console.log(error, 'from saveMessage');
+    return null;
+  }
+}
+
+export async function getPreviousMessages(userId1, userId2) {
+  console.log(appwriteConfig,'appwriteConfig.chatCollectionId')
+  try {
+    const messages = await database.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.chatCollectionId,
+      [
+        Query.equal('senderId', [userId1, userId2]),
+        Query.equal('receiverId', [userId1, userId2]),
+        Query.orderDesc('timestamp')
+      ]
+    );
+    return messages.documents;
+  } catch (error) {
+    console.log(error, 'from getPreviousMessages');
+    return [];
+  }
+}
+
 export { account, storage, database };

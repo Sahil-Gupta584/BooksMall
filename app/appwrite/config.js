@@ -7,7 +7,8 @@ const appwriteConfig = {
     storageId: process.env.NEXT_PUBLIC_APPWRITE_STORAGE_ID,
     userCollectionId: process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID,
     booksCollectionId: process.env.NEXT_PUBLIC_APPWRITE_BOOKS_COLLECTION_ID,
-    chatCollectionId: process.env.NEXT_PUBLIC_APPWRITE_CHAT_COLLECTION_ID,
+    chatCollectionId: process.env.NEXT_PUBLIC_APPWRITE_CHATS_COLLECTION_ID,
+    messageCollectionId: process.env.NEXT_PUBLIC_APPWRITE_MESSAGES_COLLECTION_ID,
   };
 
  const client = new Client();

@@ -12,10 +12,8 @@ const Carousel = ({ images }) => {
     setCurrentSlide((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  //   useEffect(() => {
-  //     const timer = setInterval(nextSlide, 5000); // Auto-advance every 5 seconds
-  //     return () => clearInterval(timer);
-  //   }, []);
+    useEffect(() => {
+console.log('images', images)    }, []);
 
   return (
     <div className="flex flex-col items-center p-2">

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CurrentLocation, CustomLocation } from "../components/Location";
 import Protect from "../components/Protect";
 
-const Sell = ({ params }) => {
+const Sell = ({ params,currentUser }) => {
   const [coverImageIndex, setCoverImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const router = useRouter();
@@ -48,7 +48,7 @@ const Sell = ({ params }) => {
       try {
 
         const user = await account.get();
-        const res = await saveToDb(bookData, coverImageIndex, images,location,user.$id);
+        const res = await saveToDb(bookData, coverImageIndex, images,location,currentUser.$id);
         console.log(res);
         if (res) router.push("/");
       } catch (err) {
@@ -211,7 +211,7 @@ const Sell = ({ params }) => {
           <div role="tablist" className="tabs tabs-bordered grid-cols-2">
             <input type="radio" name="my_tabs_1" role="tab" className="tab" aria-label="Custom" defaultChecked />
             <div role="tabpanel" className="tab-content p-1">
-              <CustomLocation handleChange />
+              <CustomLocation  />
             </div>
 
             <input type="radio" name="my_tabs_1" role="tab" className="tab" aria-label="Get Current Location"  />

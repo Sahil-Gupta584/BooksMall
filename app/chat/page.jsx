@@ -1,30 +1,41 @@
 'use client';
-import { addChatPartner, getUser } from '@/app/appwrite/api';
+import { getChat } from '@/app/appwrite/api';
 import Chat from '@/app/components/Chat'
 import Protect from '@/app/components/Protect'
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 const Page = ({ searchParams, currentUser }) => {
+  
+  const [chat, setChat] = useState(false);
+  const [isLoading, setisLoading] = useState(true)
+  const chatId = searchParams?.chatId;
+  const sellerId = searchParams?.sellerId;
 
-  let currentUserId = currentUser.$id;
-  const sellerId = searchParams?.chatId?.split('-')[1];
   useLayoutEffect(() => {
     (async () => {
       if (searchParams.chatId) {
-        
-        const user = await getUser(currentUser.$id);
-        console.log(user)
-        user.chatPartners.includes(sellerId) ? null :
-        await addChatPartner(currentUser.$id,sellerId);
+
+        const newChat = await getChat(chatId, sellerId, currentUser);
+        setChat(newChat);
+        setisLoading(false)
+      } else {
+        setisLoading(false)
       }
+    })()
 
-   })()
+  }, [chatId, sellerId, currentUser]);
 
-  },[])
-  return (
-    
-    <Chat currentUser={currentUser} sellerId={sellerId} />
-  )
+  if (isLoading) {
+    return <div className="isLoading universal isLoading-spinner h-[91vh] w-[100vw] "></div>;
+  }
+
+  if (!isLoading) {
+
+    return (
+
+      <Chat currentUser={currentUser} initialChat={chat} />
+    )
+  }
 }
 
 export default Protect(Page);

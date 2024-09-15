@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "./components/Nav";
 import { SocketProvider } from "./context/socketContext";
+import { ChatProvider } from "./context/chatContext";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -12,16 +13,18 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  
+
   return (
     <html lang="en" data-theme="light" className="bg-[#f3eaea]">
       <body className={inter.className}>
-        
-        <SocketProvider>
-        <Nav />
-          
-        {children}
+
+        <SocketProvider >
+          <ChatProvider>
+            <Nav />
+            {children}
+          </ChatProvider>
         </SocketProvider>
+
       </body>
     </html>
   );

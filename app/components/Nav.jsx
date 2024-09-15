@@ -80,7 +80,7 @@ function Nav() {
                     </div>
                     <section
                         tabIndex={0}
-                        className="menu menu-sm dropdown-content rounded-md shadow-[rgba(0,0,0,0.25)_0px_54px_55px,rgba(0,0,0,0.12)_0px_-12px_30px,rgba(0,0,0,0.12)_0px_4px_6px,rgba(0,0,0,0.17)_0px_12px_13px,rgba(0,0,0,0.09)_0px_-3px_5px] z-[1] mt-3 w-52 p-2 bg-[wheat]"
+                        className="menu menu-sm dropdown-content rounded-md shadow-[rgba(0,0,0,0.25)_0px_54px_55px,rgba(0,0,0,0.12)_0px_-12px_30px,rgba(0,0,0,0.12)_0px_4px_6px,rgba(0,0,0,0.17)_0px_12px_13px,rgba(0,0,0,0.09)_0px_-3px_5px] z-[1] mt-3 w-fit p-2 bg-[wheat]"
                     >
                         {!loggedIn ?
                             (
@@ -96,7 +96,7 @@ function Nav() {
                             ) :
                             (
                                 <>
-                                    <div className="flex">
+                                    <div className="flex gap-2 mb-4">
                                         <div className="avatar">
                                             <div className="w-12 rounded-full">
                                                 <img src={user?.avatarUrl} />
@@ -104,16 +104,16 @@ function Nav() {
                                         </div>
                                         <div>
                                             <h2 className="font-bold">{user?.name}</h2>
-                                            <span>{user?.email}</span>
+                                            <span className="text-sm text-[rgba(0,47,52,0.64)]">{user?.email}</span>
 
                                         </div>
                                     </div>
-                                    <li className="px-2 hover:text-[grey] hover:cursor-pointer">
-                                        <Link href='/myselling' prefetch>
+                                    <li className=" hover:text-[grey] hover:cursor-pointer">
+                                        <Link href='/myselling' prefetch className="p-2">
                                             My sellings
                                         </Link>
                                     </li>
-                                    <hr className="bg-[black] border-black mt-4" />
+                                    <hr className="bg-[black] border-black mt-2" />
                                     <li className="pt-1">
                                         <button
                                             className="border-0 outline-0 hover:bg-[gray] hover:text-[white] py-0 px-2"

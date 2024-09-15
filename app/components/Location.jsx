@@ -40,32 +40,35 @@ async function getLocationDetails() {
     console.log('State:', locationInfo.state);
     return locationInfo;
   } catch (error) {
-    console.error('Error getting location:', error);
+    console.log('Error getting location:', error);
   }
 }
 
-const CustomLocation = ({location}) => {
-  const [selectedState, setSelectedState] = useState(() => {
-  return location && location.state
-    ? { value: location.state, label: location.state }
-    : null;
-});
+const CustomLocation = ({ location }) => {
 
-const [selectedCity, setSelectedCity] = useState(() => {
-  return location && location.city
-    ? { value: location.city, label: location.city }
-    : null;
-});
+  const [selectedState, setSelectedState] = useState(() => {
+    return location && location.state
+      ? { value: location.state, label: location.state }
+      : null;
+  });
+
+
+  const [selectedCity, setSelectedCity] = useState(() => {
+    return location && location.city
+      ? { value: location.city, label: location.city }
+      : null;
+  });
+
   const [allStates, setAllStates] = useState([]);
   const [allCities, setAllCities] = useState([]);
 
   useEffect(() => {
-    console.log('ddefaultLocation:',location)
+    console.log('ddefaultLocation:', location)
+
     axios
       .get('https://raw.githubusercontent.com/mbaye19/country-data/main/States.json')
       .then(response => {
-        const states = response.data
-          .filter(state => state.country_code === 'IN')
+        const states = response.data.filter(state => state.country_code === 'IN')
           .map(state => ({ value: state.name, label: state.name }));
         setAllStates(states);
         console.log(states)
@@ -74,21 +77,30 @@ const [selectedCity, setSelectedCity] = useState(() => {
         console.log('Error fetching states data:', err);
       });
 
-      if(selectedState && selectedState.value.length>0){
 
-        axios.get('https://raw.githubusercontent.com/mbaye19/country-data/main/Cities.json').then(res=>{
-          const cities = res.data.filter(city => city.state_name === selectedState.label).map(city => ({ label: city.name, value: city.name }));
-          console.log('cities:',cities)
-          setAllCities(cities)
-        });
-      }
   }, []);
+
+  useEffect(() => {
+    if (selectedState && selectedState.value.length > 0) {
+      console.log('selectedState:', selectedState)
+      axios.get('https://raw.githubusercontent.com/mbaye19/country-data/main/Cities.json').then(res => {
+        const cities = res.data.filter(city => city.state_name === selectedState.label).map(city => ({ label: city.name, value: city.name }));
+        console.log('cities:', cities)
+        setAllCities(cities)
+      });
+    }
+  }, [selectedState])
+
 
   const handleStateSelect = async (selectedOption) => {
     setSelectedState(selectedOption);
     setSelectedCity(null);
     console.log(selectedOption)
-    const cities = (await axios.get('https://raw.githubusercontent.com/mbaye19/country-data/main/Cities.json')).data.filter(city => city.state_name === selectedOption.label).map(city => ({ label: city.name, value: city.name }));
+    const res = await axios.get('https://raw.githubusercontent.com/mbaye19/country-data/main/Cities.json')
+
+    const cities = res.data.filter(city => city.state_name === selectedOption.name)
+                           .map(city => ({ label: city.name, value: city.name }));
+
     setAllCities(cities)
     console.log(cities);
     // handleChange(selectedOption)
@@ -116,8 +128,8 @@ const [selectedCity, setSelectedCity] = useState(() => {
         id='state'
         required
       />
-      <Select
-       id='city'
+      {allCities.length>0 && <Select
+        id='city'
         className="mb-4"
         classNamePrefix='select'
         defaultValue={selectedCity}
@@ -130,7 +142,7 @@ const [selectedCity, setSelectedCity] = useState(() => {
         placeholder='Select city'
         isDisabled={!selectedState}
         required
-      />
+      />}
     </div>
   );
 };
@@ -159,11 +171,11 @@ function CurrentLocation({ handleChange }) {
       <div className="">
         <ul className='flex justify-between border-b-[grey] border-b p-1'>
           <li className='text-[rgba(0,47,52,0.64)]' >State</li>
-          <li>{location.state}</li>
+          <li>{location?.state}</li>
         </ul>
         <ul className='flex justify-between border-b-[grey] border-b p-1'>
           <li className='text-[rgba(0,47,52,0.64)]' >City</li>
-          <li>{location.city}</li>
+          <li>{location?.city}</li>
         </ul>
       </div>
 

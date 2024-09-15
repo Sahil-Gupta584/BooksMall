@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react'
-import { verifyLogin } from '../appwrite/api';
+import { getUser, verifyLogin } from '../appwrite/api';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 
@@ -14,11 +14,13 @@ const Protect = (Component) => {
         const [currentUser, setcurrentUser] = useState(false)
 
         useEffect(() => {
-            async function checkAuth() {
+            
+            (async()=>{
 
                 const user = await verifyLogin();
-                console.log(user)
-                setcurrentUser(user)
+                const res = await getUser(user.$id);
+                console.log('user:', res);
+                setcurrentUser(res);
 
                 if (user) {
                     setIsAuthenticated(true)
@@ -27,9 +29,8 @@ const Protect = (Component) => {
                 } else {
                     router.push( `/auth?next=${pathname}`);
                 }
-
-            }
-            checkAuth();
+                
+            })()
         }, [router, pathname]);
 
         if (isLoading) {

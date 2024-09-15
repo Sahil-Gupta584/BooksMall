@@ -1,164 +1,191 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import Partner from './Partner';
-import { getChatPartners, getPreviousMessages, } from '@/app/appwrite/api';
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useSocket } from "@/app/context/socketContext";
+import { getPreviousMessages, getUser, getChat, uploadMessage, updateMessageSeen } from "@/app/appwrite/api";
+import Partner from "./Partner";
+import { getTimeElapsed } from "@/app/resource";
+import { useChat } from "@/app/context/chatContext";
 
-export default function Chat({ currentUser, sellerId }) {
+export default function Chat({ currentUser, initialChat }) {
+    const currentChatRef = useRef(null); // Use ref for currentChat
+    const [isTyping, setIsTyping] = useState(false)
+    const { setChats, chats, currentChat, setCurrentChat, messages, setMessages } = useChat();
+    const { socket, onlineUsers } = useSocket();
 
-    const { socket, isConnected } = useSocket();
-    const [chatPartners, setChatPartners] = useState([]);
-    const [currentPartner, setCurrentPartner] = useState(null);
-    const [messages, setMessages] = useState([]);
+    const TYPING_TIMER_LENGTH = 800; // 500ms
+    let typingTimer;
 
+    const messagesEndRef = useRef(null);
 
     useEffect(() => {
         (async () => {
-            const partners = await getChatPartners(currentUser.$id);
-            setChatPartners(partners);
 
-            console.log(partners);
-            if (sellerId) {
-
-                setCurrentPartner(() => partners.map(p => p.$id == sellerId ? p : false))
-
-                const prevMessages = await getPreviousMessages(currentUser.$id, sellerId);
-                console.log(prevMessages, 'prevMessages');
-                prevMessages && setMessages(prevMessages);
-
-
-                // Join new room
+            console.log("chats:", chats);
+            if (initialChat) {
+                console.log('initialChat:', initialChat)
+                setChats(prevChats => [initialChat, ...prevChats]);
+                setCurrentChat(initialChat);
+                const res = await getPreviousMessages(initialChat.$id);
+                setMessages(res);
             }
-
+            
         })()
+
     }, [])
 
+    useLayoutEffect(() => {
+        // scrollToBottom
+        (() => {
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+            }
+        })()
+    }, [messages]);
+
+    // Update currentChatRef whenever currentChat changes
     useEffect(() => {
-        socket.on("RECEIVE_MSG_EVENT", (message) => {
-            setMessages((prevMessages) => [...prevMessages, message]);
-            console.log(message, 'from reciving')
-        });
-
-        socket.on("NEW_CHAT", (chatData) => {
-            setChatPartners((prevPartners) => {
-                const existingPartnerIndex = prevPartners.findIndex(p => p.$id === chatData.partnerId);
-                if (existingPartnerIndex !== -1) {
-                    // Update existing partner
-                    const updatedPartners = [...prevPartners];
-                    updatedPartners[existingPartnerIndex] = {
-                        ...updatedPartners[existingPartnerIndex],
-                        lastMessage: chatData.lastMessage,
-                        timestamp: chatData.timestamp,
-                        unreadCount: (updatedPartners[existingPartnerIndex].unreadCount || 0) + 1
-                    };
-                    return updatedPartners;
-                } else {
-                    // Add new partner
-                    return [...prevPartners, {
-                        $id: chatData.partnerId,
-                        lastMessage: chatData.lastMessage,
-                        timestamp: chatData.timestamp,
-                        unreadCount: 1
-                    }];
-                }
-            });
-        });
-
-        return () => {
-            socket.off("RECEIVE_MSG_EVENT");
-            socket.off("NEW_CHAT");
-        };
-    }, [socket]);
-
-
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const newMessage = {
-            sender: currentUser,
-            receiver: currentPartner,
-            content: e.target.elements.message.value,
-            // chat: currentChat,
-            status: 'sent',
-            timestamp: Date.now()
-        };
-
-        socket.emit('SEND_MESSAGE', newMessage);
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        e.target.elements.message.value = '';
-    };
-
-    const handlePartnerClick = async (partner) => {
-        // Join new room
-        socket.emit('JOIN_ROOM', `${currentUser.$id}-${partner.$id}`);
-        socket.emit('JOIN_ROOM', `${partner.$id}-${currentUser.$id}`);
-
-        console.log(`in room:${currentUser.$id}-${partner.$id},${partner.$id}-${currentUser.$id}`)
-
-        setCurrentPartner(partner);
-        const previousMessages = await getPreviousMessages(currentUser.$id, partner.$id);
-        setMessages(previousMessages);
-
-        // Reset unread count
-        setChatPartners((prevPartners) =>
-            prevPartners.map(p =>
-                p.$id === partner.$id ? { ...p, unreadCount: 0 } : p
+        currentChatRef.current = currentChat;
+        console.log('resetting unread')
+        setChats(prevChats =>
+            prevChats.map(chat =>
+                chat.$id === currentChat?.$id ? { ...chat, unread: 0 } : chat
             )
         );
+    }, [currentChat]);
+
+
+
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const content = e.target.elements.message.value;
+        if (!content.trim()) return;
+        const receiver = currentChat.participants.find((p) => p.$id !== currentUser.$id);
+
+        const newMessage = {
+            senderId: currentUser.$id,
+            receiverId: receiver.$id,
+            content,
+            chatId: currentChat.$id,
+            status: "sent",
+            timestamp: Date.now().toString(),
+        };
+
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        e.target.elements.message.value = "";
+
+        await uploadMessage(newMessage);
+        socket.emit("SEND_MESSAGE", newMessage);
+        console.log('send message event emitted')
+
     };
 
+    function handleChange(params) {
+
+        const partnerId = currentChat.participants.find((p) => p.$id !== currentUser.$id).$id
+        console.log('partnerId:', partnerId)
+
+        if (!isTyping) {
+            setIsTyping(true);
+            socket.emit("TYPING_EVENT", { partnerId, isTyping: true });
+            console.log('typing event emitted')
+        }
+
+        // Clearing timeout to prevent long queues in event loop!
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            setIsTyping(false);
+            socket.emit('TYPING_EVENT', { partnerId, isTyping: false });
+        }, TYPING_TIMER_LENGTH);
 
 
+    }
+
+    const handlePartnerClick = async (chat) => {
+
+        setCurrentChat(chat);
+
+        const previousMessages = await getPreviousMessages(chat.$id);
+        setMessages(previousMessages);
+        console.log('previousMessages:', previousMessages)
+
+        const partnerId = currentChatRef.current.participants.find((p) => p.$id !== currentUser.$id).$id
+        if (onlineUsers.includes(partnerId)) {
+
+            console.log('updating seen for online partner', partnerId)
+            socket.emit("SEEN_MESSAGE", { chatId: currentChatRef.current.$id, partnerId: partnerId });
+            console.log('seen message event emitted');
+        } else {
+            console.log('updating seen for offline partner')
+            await updateMessageSeen(chat.$id);
+        }
+
+
+    };
 
     return (
-        <div className="flex flex-col sm:flex-row h-[91vh] bg-[#f3eaea]">
-            <div className="w-full sm:w-1/3 lg:w-1/4 bg-[#f3eaea] border-b sm:border-r border-[#e0d5d5] overflow-y-auto max-h-[30vh] sm:max-h-full">
-                {chatPartners && chatPartners.map((partner, index) => (
+        <div className="flex h-[91vh] bg-[#f3eaea]">
+            <div className="w-1/4 bg-[#f3eaea] border-r border-[#e0d5d5] overflow-y-auto">
+                {chats.length > 0 && chats.map((chat, i) => (
                     <div
-                        className={`p-4 flex ${currentPartner === partner ? 'bg-[#e0d5d5]' : ''} items-center gap-2 border-b border-[#e0d5d5] hover:bg-[#e0d5d5] cursor-pointer`}
-                        onClick={() => handlePartnerClick(partner)}
-                        key={index}
+                        className={`p-4 flex ${currentChat?.$id === chat?.$id ? "bg-[#e0d5d5]" : ""
+                            } items-center gap-2 border-b border-[#e0d5d5] hover:bg-[#e0d5d5] cursor-pointer`}
+                        onClick={() => handlePartnerClick(chat)}
+                        key={i}
                     >
-                        <Partner partner={partner} />
+                        <Partner chat={chat} currentUser={currentUser} info={true} />
                     </div>
                 ))}
             </div>
-            <div className="w-full sm:w-2/3 lg:w-3/4 flex flex-col h-[70vh] sm:h-full">
-                <div className="flex items-center font-bold gap-2 bg-[#f3eaea] p-4 border-b border-[#e0d5d5]">
-                    <Partner partner={currentPartner} />
-                </div>
-                {currentPartner ? (
+            <div className="w-3/4 flex flex-col">
+                {currentChat ? (
                     <>
-                        <div className="flex-grow bg-[#e4e4e4] overflow-y-auto p-4">
+                        <div className="flex items-center font-bold gap-2 bg-[#f3eaea] p-1 border-b border-[#e0d5d5]">
+                            <Partner chat={currentChat} currentUser={currentUser} />
+                        </div>
+                        <div className="message-box flex-grow bg-[#e4e4e4] overflow-y-auto py-4 px-1">
                             {messages.map((msg, index) => (
-                                <div key={index} className={`mb-2 ${msg.senderId === currentUser.$id ? 'text-right' : 'text-left'}`}>
-                                    {msg.content}
+                                <div
+                                    className={`mb-4 flex flex-col ${msg.senderId === currentUser.$id ? " items-end" : "items-start"}`}
+                                    id={msg.timestamp}
+                                    key={index}
+                                >
+                                    <span className="text-[9px] text-gray-500">{getTimeElapsed(msg.timestamp)}</span>
+                                    <div
+                                        className={`w-fit p-4 ${msg.senderId === currentUser.$id
+                                            ? "bg-[#d97f02] rounded-tl-3xl rounded-tr-2xl rounded-bl-3xl"
+                                            : "bg-[#f3aa4b] rounded-tl-2xl rounded-tr-3xl rounded-br-3xl"
+                                            } break-all`}
+                                    >
+                                        {msg.content}
+                                    </div>
+                                    {msg.senderId === currentUser.$id && <span className="text-[13px]">{msg.status}</span>}
                                 </div>
                             ))}
+                            <div ref={messagesEndRef} />
+
                         </div>
-                        <form className="flex p-4 bg-[#f3eaea]" onSubmit={(e) => handleSubmit(e)}>
+                        <form className="flex p-4 bg-[#f3eaea]" onSubmit={handleSubmit}>
                             <input
                                 type="text"
                                 placeholder="Type a message"
-                                name='message'
+                                name="message"
                                 className="flex-grow p-[.70rem] border border-[#e0d5d5] rounded-full focus:outline-none focus:ring-2 focus:ring-[#25D366]"
+                                onChange={handleChange}
                             />
                             <button
                                 type="submit"
-                                className="ml-2 sm:ml-4 px-4 sm:px-6 py-2 bg-[#25D366] text-white rounded-full hover:bg-[#128C7E] focus:outline-none focus:ring-2 focus:ring-[#25D366]"
+                                className="ml-4 px-6 py-2 bg-[#25D366] text-white rounded-full hover:bg-[#128C7E] focus:outline-none focus:ring-2 focus:ring-[#25D366]"
                             >
                                 Send
                             </button>
                         </form>
                     </>
-
                 ) : (
                     <div className="flex-grow flex bg-[#e4e4e4] p-4">
-                        <p className="text-center m-[auto]">Select a chat to talk to</p>
+                        <p className="text-center m-auto">Select a chat to start talking</p>
                     </div>
                 )}
-
             </div>
         </div>
     );

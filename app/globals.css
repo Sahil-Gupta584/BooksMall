@@ -34,6 +34,10 @@
   outline: 2px solid red;
 }
 
+.message-box{
+  scrollbar-width: thin;
+  scrollbar-color: #9f00ff4a transparent;
+}
 
 
 @media (width < 780px) {

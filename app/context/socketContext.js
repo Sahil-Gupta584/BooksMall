@@ -1,10 +1,11 @@
-"use client";
+'use client';
 import { createContext, useContext, useEffect, useState } from "react";
 import { io as ClientIO } from "socket.io-client";
 
 const SocketContext = createContext({
   socket: null,
   isConnected: false,
+  onlineUsers: [],
 });
 
 export const useSocket = () => useContext(SocketContext);
@@ -12,6 +13,7 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   useEffect(() => {
     const socketInstance = new ClientIO({
@@ -22,18 +24,27 @@ export const SocketProvider = ({ children }) => {
       console.log("Connected to Socket.IO");
       setIsConnected(true);
 
-      socketInstance.on("RECEIVE_MSG_EVENT", (message) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
-        console.log(message,'from reciving')
-      });
-      
-    });
-    
+      if (typeof window !== 'undefined') {
+        const userId = localStorage.getItem('currentUserId'); // Assuming you store the user ID in localStorage
+        console.log(`saving user ${userId} to localstorage`);
+        if (userId) {
+          socketInstance.emit('REGISTER_USER', userId);
 
+        }
+      }
+    });
+
+    socketInstance.on("ACTIVE_USERS", (activeUsers) => {
+      setOnlineUsers(activeUsers);
+    });
+
+    
+    
     socketInstance.on("disconnect", () => {
       console.log("Disconnected from Socket.IO");
       setIsConnected(false);
     });
+
 
     setSocket(socketInstance);
 
@@ -43,7 +54,7 @@ export const SocketProvider = ({ children }) => {
   }, []);
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider value={{ socket, isConnected, onlineUsers }}>
       {children}
     </SocketContext.Provider>
   );

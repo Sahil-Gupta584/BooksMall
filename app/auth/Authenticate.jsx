@@ -37,8 +37,10 @@ function Authenticate({ params }) {
         const password = form.elements['password']?.value;
 
         try {
+
             if (type == 'login') {
                 const res = await account.createEmailPasswordSession(email, password);
+                localStorage.setItem('currentUserId',res.userId)
                 console.log('res;', res);
                 console.log('Logged in successfully');
                 const { original } = router?.query || {};
@@ -55,6 +57,7 @@ function Authenticate({ params }) {
                 }
                 if(!res) setError("failed");
         }
+
         } catch (err) {
             console.log(err.message, err);
             setError(err.message);

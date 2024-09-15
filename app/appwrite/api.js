@@ -1,6 +1,6 @@
 
 import { Query } from "appwrite";
-import { ID,account,database,storage,avatar,appwriteConfig } from "./config";
+import { ID, account, database, storage, avatar, appwriteConfig } from "./config";
 
 export async function verifyLogin() {
   try {
@@ -38,11 +38,11 @@ export function getFilePreview(fileId) {
     console.log(fileUrl, "from getFilePreview");
     return fileUrl.href;
   } catch (error) {
-    console.log(error,'from getFilePreview');
+    console.log(error, 'from getFilePreview');
   }
 }
 
-export async function saveToDb(bookData, coverImageIndex, images, location, userId) {
+export async function saveToDb(bookData, coverImageIndex, images, location, ownerId) {
   try {
 
     const files = images.filter(image => image instanceof File);
@@ -59,7 +59,7 @@ export async function saveToDb(bookData, coverImageIndex, images, location, user
 
     const imageUrls = [...urls, ...bookImages];
     console.log('imageUrls:', imageUrls)
-    const bookDetails = { ...bookData, coverImageIndex, bookImages, state: location.state, city: location.city, timestamp: Date.now().toString(), userId };
+    const bookDetails = { ...bookData, coverImageIndex, bookImages, state: location.state, city: location.city, timestamp: Date.now().toString(), ownerId };
     console.log(bookDetails);
 
     const newBook = await database.createDocument(
@@ -91,7 +91,7 @@ export async function updateBook(bookId, bookData, coverImageIndex, images) {
 
     const imageUrls = [...urls, ...bookImages];
     console.log('imageUrls:', imageUrls)
-    const bookDetails = { ...bookData, coverImageIndex, bookImages, timestamp: Date.now().toString() };
+    const bookDetails = { ...bookData, coverImageIndex, bookImages:[...imageUrls], timestamp: Date.now().toString() };
     console.log(bookDetails);
 
     const updatedBook = await database.updateDocument(
@@ -103,43 +103,69 @@ export async function updateBook(bookId, bookData, coverImageIndex, images) {
     console.log('updatedBook:', updatedBook)
     return true;
   } catch (err) {
-    console.log(err.message, err, "from saveToDb");
+    console.log(err.message, err, "from updateBook  ");
     return false;
   }
 }
 
 export async function getBook(bookId) {
   try {
-    console.log(bookId)
     const book = await database.getDocument(
       appwriteConfig.databaseId,
       appwriteConfig.booksCollectionId,
       bookId
     )
-    console.log(book)
-    const seller = await database.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      book.userId
-    )
-    console.log(seller)
-    return {...book,seller: {...seller}}
+    return book
   } catch (error) {
     console.log(error, 'from getBook')
     return error
   }
 }
 
+export async function getUserBooks(userId) {
+  try {
+
+    const response = await database.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.booksCollectionId,
+      [Query.equal("ownerId", userId), Query.orderDesc("$createdAt")]
+    );
+
+    return response.documents;
+  } catch (err) {
+    console.log(err.message, err, "from getUserBooks");
+  }
+}
+
+export async function deleteUserBook (userId,bookId) {
+  try {
+      
+    const res = await database.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.booksCollectionId,
+      bookId
+    )
+
+    console.log(res,'book deleted');
+    return true
+  } catch (error) {
+    console.log(error.message,error,'from deleteUserBook');
+    return false
+  }
+
+}
 export async function createUser(email, password, name) {
   try {
-    const user = await  account.create(ID.unique(), email, password, name.toUpperCase());
-    await account.createEmailPasswordSession(email,password);
+    const user = await account.create(ID.unique(), email, password, name.toUpperCase());
+    localStorage.setItem('currentUserId', user.$id)
+
+    await account.createEmailPasswordSession(email, password);
     const avatarUrl = avatar.getInitials(name).href;
     const res = await database.createDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId, 
-      user.$id, 
-      { name, avatarUrl,email }
+      appwriteConfig.userCollectionId,
+      user.$id,
+      { name, avatarUrl, email }
     );
     console.log(res);
     return res;
@@ -156,85 +182,111 @@ export async function getChatPartners(currentUserId) {
     const res = await database.getDocument(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
-      currentUserId ||currentUserId.$id
+      currentUserId || currentUserId.$id
     );
-    const partners = res.chatPartners.map(async (p,i)=> await getUser(p))
+    const partners = res.chatPartners.map(async (p, i) => await getUser(p))
     console.log(res)
     return Promise.all(partners)
   } catch (error) {
-    console.log(error,'from getChatPartners')
+    console.log(error, 'from getChatPartners')
   }
 }
 
-export async function addChatPartner(currentUserId,partnerId) {
-  console.log('addingpartner')
+export async function getChat(chatId, sellerId, currentUser) {
+  console.log('gettingChat', chatId);
+  console.log('sellerId', sellerId)
+  console.log('currenUserId', currentUser?.$id)
   try {
-    
-    const res = await database.getDocument(
+    // Try to get the existing chat
+    const existingChat = await database.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      currentUserId
-    )
+      appwriteConfig.chatCollectionId,
+      chatId
+    );
 
-    console.log(res)
-    await database.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      currentUserId,
-      {
-        chatPartners: [...res.chatPartners ,partnerId]
-      }
-    )
+    console.log('Chat already exists:', existingChat);
+    return existingChat;
   } catch (error) {
-   console.log(error,'from addChatPartner'); 
+    // If the error is 'document not found', create a new chat
+    if (error.code === 404) {
+      console.log('Chat not found, creating new chat');
+      try {
+        const newChat = await database.createDocument(
+          appwriteConfig.databaseId,
+          appwriteConfig.chatCollectionId,
+          chatId,
+          {
+            participants: [currentUser.$id, sellerId]
+          }
+        );
+
+        if (!currentUser.chats.includes(chatId)) {
+          console.log('updated chats for user')
+          await database.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            currentUser.$id,
+            {
+              chats: [
+                ...currentUser.chats,
+                newChat.$id
+              ]
+            }
+          )
+        }
+
+        // console.log('Created new chat:', newChat);
+        return newChat;
+      } catch (createError) {
+        console.log('Error creating new chat:', createError.message, createError);
+      }
+    } else {
+      // If it's a different error, log and rethrow it
+      console.log(error, 'Error in getChat');
+    }
   }
 }
 
 export async function getUser(Id) {
+  console.log(`getting user:`, Id)
   try {
-    
+
     return await database.getDocument(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
       Id
     )
   } catch (error) {
-   console.log(error,'from getUser'); 
+    console.log(error, 'from getUser');
   }
 }
 
 // Add these functions to appwrite/api.js
 
-export async function saveMessage(senderId, receiverId, content) {
+export async function uploadMessage(message) {
   try {
-    const message = await database.createDocument(
+    console.log('message:', message)
+    const res = await database.createDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.chatCollectionId,
+      appwriteConfig.messageCollectionId,
       ID.unique(),
-      {
-        senderId,
-        receiverId,
-        content,
-        timestamp: Date.now()
-      }
+      { ...message }
     );
-    return message;
   } catch (error) {
-    console.log(error, 'from saveMessage');
-    return null;
+    console.log(error, 'from uploadMessage');
   }
 }
 
-export async function getPreviousMessages(userId1, userId2) {
-  console.log(appwriteConfig,'appwriteConfig.chatCollectionId')
+export async function getPreviousMessages(chatId) {
+  console.log('getting previous messages of chat', chatId)
   try {
     const messages = await database.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.chatCollectionId,
+      appwriteConfig.messageCollectionId,
       [
-        Query.equal('senderId', [userId1, userId2]),
-        Query.equal('receiverId', [userId1, userId2]),
-        Query.orderDesc('timestamp')
+        Query.equal('chatId', chatId),
+        Query.orderAsc('timestamp'),
+        Query.limit(10000)
       ]
     );
     return messages.documents;
@@ -244,4 +296,60 @@ export async function getPreviousMessages(userId1, userId2) {
   }
 }
 
+export async function deleteDocument(params) {
+  await database.deleteDocument(
+    appwriteConfig.databaseId,
+    appwriteConfig.messageCollectionId,
+    params
+  )
+}
+
+export async function updateMessageSeen(chatId) {
+  try {
+
+    console.log('updating message seen for chat', chatId)
+    const messages = await getPreviousMessages(chatId);
+    messages.forEach(async (message) => {
+
+      await database.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.messageCollectionId,
+        message.$id,
+        {
+          status: 'seen',
+        }
+      )
+
+    })
+  } catch (error) {
+    console.log(error.message, error, 'from updateMessageSeen');
+  }
+}
+
+export async function addChatToUser(currentUserId, chatId) {
+  try {
+    const user = await getUser(currentUserId)
+
+    if (!user.chats.includes(chatId)) {
+
+      await database.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        currentUserId,
+        {
+          chats: [
+            ...user.chats,
+            chatId
+          ]
+        }
+
+      )
+
+      console.log('updated user chats')
+    }
+  } catch (error) {
+    console.log(error, 'from addChatToUser');
+    return error
+  }
+}
 export { account, storage, database };

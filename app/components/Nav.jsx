@@ -113,6 +113,11 @@ function Nav() {
                                             My sellings
                                         </Link>
                                     </li>
+                                    <li className=" hover:text-[grey] hover:cursor-pointer">
+                                        <Link href='/chat' prefetch className="p-2">
+                                            My Chats
+                                        </Link>
+                                    </li>
                                     <hr className="bg-[black] border-black mt-2" />
                                     <li className="pt-1">
                                         <button

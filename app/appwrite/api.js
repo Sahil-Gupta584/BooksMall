@@ -91,7 +91,7 @@ export async function updateBook(bookId, bookData, coverImageIndex, images) {
 
     const imageUrls = [...urls, ...bookImages];
     console.log('imageUrls:', imageUrls)
-    const bookDetails = { ...bookData, coverImageIndex, bookImages:[...imageUrls], timestamp: Date.now().toString() };
+    const bookDetails = { ...bookData, coverImageIndex, bookImages: [...imageUrls], timestamp: Date.now().toString() };
     console.log(bookDetails);
 
     const updatedBook = await database.updateDocument(
@@ -137,19 +137,19 @@ export async function getUserBooks(userId) {
   }
 }
 
-export async function deleteUserBook (userId,bookId) {
+export async function deleteUserBook(userId, bookId) {
   try {
-      
+
     const res = await database.deleteDocument(
       appwriteConfig.databaseId,
       appwriteConfig.booksCollectionId,
       bookId
     )
 
-    console.log(res,'book deleted');
+    console.log(res, 'book deleted');
     return true
   } catch (error) {
-    console.log(error.message,error,'from deleteUserBook');
+    console.log(error.message, error, 'from deleteUserBook');
     return false
   }
 
@@ -350,6 +350,24 @@ export async function addChatToUser(currentUserId, chatId) {
   } catch (error) {
     console.log(error, 'from addChatToUser');
     return error
+  }
+}
+
+export async function getAllBooks() {
+  try {
+
+    const res = await database.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.booksCollectionId,
+      [
+        Query.orderAsc('timestamp'),
+      ]
+
+    )
+    return res.documents
+  } catch (error) {
+    console.log(error.message, error, 'from getAllBooks');
+    return false
   }
 }
 export { account, storage, database };

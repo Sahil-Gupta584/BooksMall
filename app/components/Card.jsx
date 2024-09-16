@@ -1,7 +1,7 @@
 
 function Card(props) {
     return (
-        <div className='m-[8px] max-w-[303.725px] book-card w-[calc(25%_-_16px)] h-[270px] hover:shadow-[0px_0px_5px_0px_brown] rounded-md border-2 border-solid border-[#d97f02] transition-all duration-[0.4] ease-[ease-in-out]'>
+        <div className='m-[8px] max-w-[303.725px] book-card w-[calc(25%_-_16px)] h-fit hover:shadow-[0px_0px_5px_0px_brown] rounded-md border-2 border-solid border-[#d97f02] transition-all duration-[0.4] ease-[ease-in-out]'>
             <a href="">
                 <figure className='h-[149px] m-[8px] '>
 

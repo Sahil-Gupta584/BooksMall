@@ -125,7 +125,7 @@ export default function Chat({ currentUser, initialChat }) {
 
     return (
         <div className="flex h-[91vh] bg-[#f3eaea]">
-            <div className="w-1/4 bg-[#f3eaea] border-r border-[#e0d5d5] overflow-y-auto">
+            <div className={`md:block ${currentChat?'hidden':'w-full'} w-1/4 bg-[#f3eaea] border-r border-[#e0d5d5] overflow-y-auto"`}>
                 {chats.length > 0 && chats.map((chat, i) => (
                     <div
                         className={`p-4 flex ${currentChat?.$id === chat?.$id ? "bg-[#e0d5d5]" : ""
@@ -137,10 +137,10 @@ export default function Chat({ currentUser, initialChat }) {
                     </div>
                 ))}
             </div>
-            <div className="w-3/4 flex flex-col">
+            <div className={`md:w-3/4 ${!currentChat ? 'hidden' : ''} w-full flex flex-col`}>
                 {currentChat ? (
                     <>
-                        <div className="flex items-center font-bold gap-2 bg-[#f3eaea] p-1 border-b border-[#e0d5d5]">
+                        <div className="flex items-center font-bold gap-2 bg-[#f3eaea] p-2 border-b border-[#e0d5d5]">
                             <Partner chat={currentChat} currentUser={currentUser} />
                         </div>
                         <div className="message-box flex-grow bg-[#e4e4e4] overflow-y-auto py-4 px-1">
@@ -182,7 +182,7 @@ export default function Chat({ currentUser, initialChat }) {
                         </form>
                     </>
                 ) : (
-                    <div className="flex-grow flex bg-[#e4e4e4] p-4">
+                    <div className="md:block hidden flex-grow flex bg-[#e4e4e4] p-4">
                         <p className="text-center m-auto">Select a chat to start talking</p>
                     </div>
                 )}

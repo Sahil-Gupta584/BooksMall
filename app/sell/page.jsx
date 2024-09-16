@@ -47,7 +47,6 @@ const Sell = ({ params,currentUser }) => {
 
       try {
 
-        const user = await account.get();
         const res = await saveToDb(bookData, coverImageIndex, images,location,currentUser.$id);
         console.log(res);
         if (res) router.push("/");
@@ -83,7 +82,7 @@ const Sell = ({ params,currentUser }) => {
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        className="bg-white shadow-md rounded px-4 pt-6 pb-8 mb-4"
       >
         <div className="mb-4">
           <label
@@ -214,7 +213,7 @@ const Sell = ({ params,currentUser }) => {
               <CustomLocation  />
             </div>
 
-            <input type="radio" name="my_tabs_1" role="tab" className="tab" aria-label="Get Current Location"  />
+            <input type="radio" name="my_tabs_1" role="tab" className="tab p-0" aria-label="Current Location"  />
             <div role="tabpanel" className="tab-content p-1 h-[245px]">
               <CurrentLocation handleChange />
             </div>
@@ -223,12 +222,12 @@ const Sell = ({ params,currentUser }) => {
         </div>
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2">UPLOAD UP TO 5 PHOTOS</h2>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="flex flex-wrap gap-4">
             {images.length > 0 &&
               images.map((file, index) => {
                 const image = URL.createObjectURL(file);
                 return (
-                  <div key={index} className="relative">
+                  <div key={index} className="relative w-[125px] h-[125px]">
                     <img
                       src={image}
                       alt={`Preview ${index + 1}`}
@@ -263,10 +262,10 @@ const Sell = ({ params,currentUser }) => {
                 );
               })}
             {images.length < 5 && (
-              <label htmlFor="addimg">
+              <div className="w-[125px] h-[125px]">
                 <label
                   htmlFor="addimg"
-                  className="border-2 border-gray-300 rounded-lg aspect-square flex items-center justify-center cursor-pointer hover:bg-gray-100 p-5"
+                  className="h-full  border-2 border-gray-300 rounded-lg aspect-square flex items-center justify-center cursor-pointer hover:bg-gray-100 p-5"
                 >
                   <img
                     src={addPhoto.src}
@@ -286,7 +285,7 @@ const Sell = ({ params,currentUser }) => {
                   min="1"
                   max="5"
                 />
-              </label>
+              </div>
             )}
           </div>
           <p className="text-red-500 text-xs italic mt-2">

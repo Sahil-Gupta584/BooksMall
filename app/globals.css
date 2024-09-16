@@ -71,6 +71,7 @@
     position: fixed;
     top: 88vh;
     right: 36%;
+    z-index: 1000;
   }
 
   .SellBtn_button__CyGQI::after {

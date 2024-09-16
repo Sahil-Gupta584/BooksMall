@@ -36,7 +36,7 @@ function Nav() {
             <div className="flex-none gap-2">
                 <SellBtn />
 
-                <div className="dropdown dropdown-end" >
+                <div className="dropdown dropdown-end m-2" >
                     <div>
                         <a
                             tabIndex={0}

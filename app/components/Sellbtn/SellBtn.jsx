@@ -24,7 +24,7 @@ function SellBtn() {
         }
     }
     return (
-        <Link prefetch href='/sell' className="sell-btn" >
+        <Link prefetch href='/sell' className="sell-btn " >
         {/* <a href='/sell'>  */}
             <div className={styles['container-button']}>
                 <div className={`${styles.hover} ${styles['bt-1']}`}></div>

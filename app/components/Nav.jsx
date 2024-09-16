@@ -9,6 +9,7 @@ function Nav() {
     const [user, setUser] = useState(null)
     const pathname = usePathname();
     const router = useRouter();
+    console.log('pathname', pathname)
     useEffect(() => {
         async function fetch() {
             const res = await verifyLogin();
@@ -22,6 +23,12 @@ function Nav() {
 
     }, [router]);
 
+    const shouldHideSellBtn =
+        pathname === "/auth" || 
+        pathname.startsWith("/book/") || 
+        pathname.startsWith("/chat") || 
+        pathname === "/sell";
+
 
     return (
         <nav className={`navbar ${pathname == "/auth" ? "hidden" : ""} bg-[#d97f02] shadow-[0_3px_6px_0_rgba(50,50,50,0.3)] `}>
@@ -34,7 +41,10 @@ function Nav() {
                 />
             </div>
             <div className="flex-none gap-2">
+                <div className={`${shouldHideSellBtn ? "hidden" : ""}`} >
+
                 <SellBtn />
+                </div>
 
                 <div className="dropdown dropdown-end m-2" >
                     <div>

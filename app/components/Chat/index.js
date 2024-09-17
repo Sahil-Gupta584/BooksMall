@@ -126,7 +126,7 @@ export default function Chat({ currentUser, initialChat }) {
     return (
         <div className="flex h-[91vh] bg-[#f3eaea]">
             <div className={`md:block ${currentChat?'hidden':'w-full'} w-1/4 bg-[#f3eaea] border-r border-[#e0d5d5] overflow-y-auto"`}>
-                {chats.length > 0 && chats.map((chat, i) => (
+                {chats.length > 0 ? chats.map((chat, i) => (
                     <div
                         className={`p-4 flex ${currentChat?.$id === chat?.$id ? "bg-[#e0d5d5]" : ""
                             } items-center gap-2 border-b border-[#e0d5d5] hover:bg-[#e0d5d5] cursor-pointer`}
@@ -135,7 +135,9 @@ export default function Chat({ currentUser, initialChat }) {
                     >
                         <Partner chat={chat} currentUser={currentUser} info={true} />
                     </div>
-                ))}
+                )):(
+                    <p className="font-bold text-xl">Oops, You don have any past converations</p>
+                )}
             </div>
             <div className={`md:w-3/4 ${!currentChat ? 'hidden' : ''} w-full flex flex-col`}>
                 {currentChat ? (

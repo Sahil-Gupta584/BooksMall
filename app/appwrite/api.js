@@ -158,8 +158,6 @@ export async function createUser(email, password, name) {
   try {
     const user = await account.create(ID.unique(), email, password, name.toUpperCase());
     localStorage.setItem('currentUserId', user.$id)
-
-    await account.createEmailPasswordSession(email, password);
     const avatarUrl = avatar.getInitials(name).href;
     const res = await database.createDocument(
       appwriteConfig.databaseId,

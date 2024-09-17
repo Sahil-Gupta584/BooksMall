@@ -9,7 +9,6 @@ function Nav() {
     const [user, setUser] = useState(null)
     const pathname = usePathname();
     const router = useRouter();
-    console.log('pathname', pathname)
     useEffect(() => {
         async function fetch() {
             const res = await verifyLogin();

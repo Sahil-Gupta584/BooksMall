@@ -52,11 +52,7 @@
   }
 }
 
-@media (width < 900px) {
-  .book-card {
-    width: 191.111px;
-  }
-}
+
 
 @media (width < 695px) {
   .profile-lg {

@@ -30,7 +30,7 @@ function ShowCards() {
 
     return (
         // <div className="flex p-9">
-        <section className="w-[100%] flex p-4 px-12 flex-col ">
+        <section className="w-[100%] flex md:p-4 p-0 flex-col ">
             <div className="w-full">
                 <p className="font-bold">Available Books</p>
                 <div className="flex w-full flex-wrap">
@@ -40,7 +40,7 @@ function ShowCards() {
                 </div>
             </div>
             <div className="w-full">
-                <p className="font-bold">These are just some demo cards to see full funtional card Card make a new by cliking on SELL</p>
+                <p className="font-bold">These are just some demo cards to see fully funtional Card make a new by cliking on SELL</p>
                 <div className="flex w-full flex-wrap">
                     {imgUrls.map((e, i) => (
                         <Card src={e.previewURL} key={i} />

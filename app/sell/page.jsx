@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CurrentLocation, CustomLocation } from "../components/Location";
 import Protect from "../components/Protect";
 
-const Sell = ({ params,currentUser }) => {
+const Sell = ({ params, currentUser }) => {
   const [coverImageIndex, setCoverImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const router = useRouter();
@@ -39,15 +39,15 @@ const Sell = ({ params,currentUser }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const location ={
-    state: e.target.elements.namedItem('state').value,
-     city: e.target.elements.namedItem('city').value 
+    const location = {
+      state: e.target.elements.namedItem('state').value,
+      city: e.target.elements.namedItem('city').value
     }
     if (formRef.current.checkValidity() && images.length > 0) {
 
       try {
 
-        const res = await saveToDb(bookData, coverImageIndex, images,location,currentUser.$id);
+        const res = await saveToDb(bookData, coverImageIndex, images, location, currentUser.$id);
         console.log(res);
         if (res) router.push("/");
       } catch (err) {
@@ -207,22 +207,12 @@ const Sell = ({ params,currentUser }) => {
         </div>
         <div className="mb-4">
           <h2 className="text-xl font-semibold mb-2">Confirm Your Location</h2>
-          <div role="tablist" className="tabs tabs-bordered grid-cols-2">
-            <input type="radio" name="my_tabs_1" role="tab" className="tab" aria-label="Custom" defaultChecked />
-            <div role="tabpanel" className="tab-content p-1">
-              <CustomLocation  />
-            </div>
+          <CustomLocation />
 
-            <input type="radio" name="my_tabs_1" role="tab" className="tab p-0" aria-label="Current Location"  />
-            <div role="tabpanel" className="tab-content p-1 h-[245px]">
-              <CurrentLocation handleChange />
-            </div>
-
-          </div>
         </div>
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2">UPLOAD UP TO 5 PHOTOS</h2>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-2">
             {images.length > 0 &&
               images.map((file, index) => {
                 const image = URL.createObjectURL(file);

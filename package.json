@@ -15,6 +15,7 @@
     "appwrite": "^15.0.0",
     "axios": "^1.7.2",
     "next": "14.2.5",
+    "next-themes": "^0.3.0",
     "pubnub": "^7.6.3",
     "pubnub-react": "^3.0.2",
     "react": "^18",

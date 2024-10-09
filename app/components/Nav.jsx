@@ -4,41 +4,96 @@ import SellBtn from "./Sellbtn/SellBtn";
 import { usePathname, useRouter } from "next/navigation";
 import { account, getUser, verifyLogin } from "../appwrite/api";
 import Link from "next/link";
+import { getAllBooks } from "../appwrite/api"; // Ensure this is imported
+
 function Nav() {
     const [loggedIn, setLoggedIn] = useState(false);
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null);
+    const [books, setBooks] = useState([]); // To store all books
+    const [searchQuery, setSearchQuery] = useState(""); // To store search input
+    const [filteredBooks, setFilteredBooks] = useState([]); // To store filtered books
     const pathname = usePathname();
     const router = useRouter();
+
     useEffect(() => {
         async function fetch() {
             const res = await verifyLogin();
             if (res) {
-                setLoggedIn(true)
+                setLoggedIn(true);
                 const user = await getUser(res.$id);
                 setUser(user);
             }
         }
         fetch();
-
     }, [router]);
 
+    useEffect(() => {
+        async function fetchBooks() {
+            const allBooks = await getAllBooks();
+            setBooks(allBooks);
+        }
+        fetchBooks();
+    }, []);
+
+    // Filter books based on the search query
+    useEffect(() => {
+        if (searchQuery.trim() === "") {
+            setFilteredBooks([]); // No query, no filtered books
+        } else {
+            const filtered = books.filter((book) =>
+                book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                book.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                book.state.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                book.city.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredBooks(filtered);
+        }
+    }, [searchQuery, books]);
+
     const shouldHideSellBtn =
-        pathname === "/auth" || 
-        pathname.startsWith("/book/") || 
-        pathname.startsWith("/chat") || 
+        pathname === "/auth" ||
+        pathname.startsWith("/book/") ||
+        pathname.startsWith("/chat") ||
         pathname === "/sell";
 
 
     return (
         <nav className={`navbar ${pathname == "/auth" ? "hidden" : ""} bg-[#d97f02] shadow-[0_3px_6px_0_rgba(50,50,50,0.3)] `}>
-            <div className="flex-1">
-                <Link className="btn btn-ghost text-xl" href="/">BooksMall</Link>
-                <input
-                    type="text"
-                    placeholder="Search"
-                    className="search input input-bordered w-24 w-[62%] bg-[wheat] border-0 h-[2.7rem] ml-[13px] "
-                />
-            </div>
+            <div className="flex items-center w-full relative">
+    <Link className="btn btn-ghost text-xl" href="/">
+        BooksMall
+    </Link>
+    <div className="relative w-[62%] ml-[13px]">
+        <input
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+            className="search input input-bordered w-full bg-[wheat] border-0 h-[2.7rem] pl-4"
+        />
+        <div className={`dropdown-content absolute bg-white shadow mt-2 p-2 w-full z-50 ${filteredBooks.length > 0 || searchQuery ? "block" : "hidden"}`}>
+            {filteredBooks.length > 0 ? (
+                <ul>
+                    {filteredBooks.map((book, i) => (
+                        <li key={i} className="p-2 border-b border-gray-200">
+                            <Link href={`/book/${book.$id}`}>
+                                <div>
+                                    <p className="font-bold">{book.title}</p>
+                                    <p className="text-sm text-gray-600">
+                                        {book.category}, {book.state} - {book.city}
+                                    </p>
+                                </div>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            ) : searchQuery && (
+                <p className="p-2 text-gray-500">No results found</p>
+            )}
+        </div>
+    </div>
+</div>
+
             <div className="flex-none gap-2">
                 <div className={`${shouldHideSellBtn ? "hidden" : ""}`} >
 

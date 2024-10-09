@@ -1,0 +1,53 @@
+.book-animation-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+}
+
+.book {
+    width: 150px;
+    height: 200px;
+    perspective: 1000px;
+    position: relative;
+}
+
+.book .front-cover, .book .back-cover {
+    width: 150px;
+    height: 200px;
+    position: absolute;
+    background-color: #d97f02;
+    border-radius: 5px;
+    transform-origin: left;
+    backface-visibility: hidden;
+    transition: transform 2s ease-in-out;
+}
+
+.book .back-cover {
+    background-color: #6b4c1a;
+    transform: rotateY(180deg);
+}
+
+.book .pages {
+    position: absolute;
+    width: 145px;
+    height: 190px;
+    top: 5px;
+    left: 5px;
+    background-color: #fff;
+    z-index: 1;
+}
+
+.book .front-cover {
+    z-index: 2;
+}
+
+.book-animation-container .book.open .front-cover {
+    transform: rotateY(-160deg);
+}

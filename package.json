@@ -9,16 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ably/chat": "^0.1.0",
-    "@pubnub/chat": "^0.8.1",
-    "ably": "^2.3.1",
-    "appwrite": "^15.0.0",
+      "appwrite": "^15.0.0",
     "axios": "^1.7.2",
     "next": "14.2.5",
-    "pubnub": "^7.6.3",
-    "pubnub-react": "^3.0.2",
     "react": "^18",
-    "react-chat-engine": "^1.11.28",
     "react-dom": "^18",
     "react-password-strength-bar": "^0.4.1",
     "react-select": "^5.8.0",

@@ -1,7 +1,30 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { categories } from "./resource";
 import ShowCards from "./components/showCards";
+
 export default function Home() {
   console.log(process.env.API_KEY)
+  const [showScroll, setShowScroll] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScroll(true);
+      } else {
+        setShowScroll(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <>
       <div className="category-container">
@@ -28,6 +51,14 @@ export default function Home() {
         </div>
       </div>
       <ShowCards />
+      {showScroll && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-5 right-5 p-2 bg-[#d97f02] text-white rounded-full"
+        >
+          ↑
+        </button>
+      )}
     </>
   );
 }

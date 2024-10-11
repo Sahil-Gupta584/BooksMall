@@ -5,6 +5,7 @@ import { categories } from "./resource";
 import ShowCards from "./components/showCards";
 
 export default function Home() {
+  console.log(process.env.API_KEY)
   const [showScroll, setShowScroll] = useState(false);
 
   useEffect(() => {

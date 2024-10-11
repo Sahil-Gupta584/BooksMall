@@ -1,6 +1,6 @@
-# Booksmall: Marketplace for Second-Hand Books 📚
+# BooksMall: Marketplace for Second-Hand Books 📚
 
-Welcome to **Booksmall**, a marketplace dedicated to second-hand books! This project allows users to buy, sell, and communicate with sellers in real time, making it easier than ever to find great deals on pre-loved literature. 💬
+Welcome to **BooksMall**, a marketplace dedicated to second-hand books! This project allows users to buy, sell, and communicate with sellers in real time, making it easier than ever to find great deals on pre-loved literature. 💬
 
 ## Features 🌟
 
@@ -15,7 +15,7 @@ This project was initially created as a practice endeavor, but I believe it’s 
 
 ### Live Demo 🌐
 
-You can check out the deployed version of Booksmall [here](https://books-mall.vercel.app/).
+You can check out the deployed version of BooksMall [here](https://books-mall.vercel.app/).
 
 ### Installation 🛠️
 
@@ -63,6 +63,7 @@ Documentation improvements are welcome! If you have suggestions or want to help 
 ## Technologies Used 💻
 
 - **Frontend:**
+  - Next.js
   - React.js
   - Redux for state management
   - Tailwind CSS for styling
@@ -79,7 +80,7 @@ Documentation improvements are welcome! If you have suggestions or want to help 
 
 ## 🎉 Hacktoberfest 2024
 
-Booksmall is proud to be a part of **Hacktoberfest 2024**!  
+BooksMall is proud to be a part of **Hacktoberfest 2024**!  
 We encourage developers and open-source enthusiasts to contribute to our project as part of Hacktoberfest, a month-long celebration of open-source contributions during October.  
 Come and join us to make an impact in the real world while learning and growing your skills in software development!
 
@@ -99,6 +100,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments 🙏
+## Acknowledgements 🙏
 
-Thank you for checking out Booksmall! Happy reading and happy selling! 📚
+Thank you for checking out BooksMall! Happy reading and happy selling! 📚

@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react';
 import styles from './Auth.module.css';
 import { account, verifyLogin, createUser } from '../appwrite/api';
 import { useRouter } from 'next/navigation';
+import PasswordStrengthBar from 'react-password-strength-bar';
 
 function Authenticate({ params }) {
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [showPass, setShowPass] = useState(false)
+    const [showPass, setShowPass] = useState(false);
+    const [password, setPassword] = useState('');
 
     const router = useRouter();
     useEffect(() => {
@@ -34,7 +36,6 @@ function Authenticate({ params }) {
         const form = e.target;
         const email = form.elements['email']?.value;
         const name = form.elements['name']?.value;
-        const password = form.elements['password']?.value;
 
         try {
 
@@ -65,6 +66,10 @@ function Authenticate({ params }) {
             setLoading(false);
         }
     }
+
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+    };
 
     return (
         <div className={`${styles.container} bg-[#d97f02] h-[100vh] text-[#d97f02]`} suppressHydrationWarning >
@@ -97,7 +102,8 @@ function Authenticate({ params }) {
                     <form className='flex flex-col gap-5' onSubmit={(e) => handleSubmit(e, 'signup')}>
                         <input type="text" name="name" className={styles.input} placeholder="First and Last Name" required />
                         <input type="email" name="email" className={styles.input} placeholder="example@gmail.com" required />
-                        <input type={showPass ? 'text' : 'password'} name="password" className={styles.input} placeholder="Password" required />
+                        <input type={showPass ? 'text' : 'password'} name="password" className={styles.input} placeholder="Password" value={password} onChange={handlePasswordChange} required />
+                        <PasswordStrengthBar password={password} />
                         <input type={showPass ? 'text' : 'password'} className={styles.input} placeholder="Confirm Password" required />
                         <div className="flex gap-2 mt-1 cursor-pointer" >
 

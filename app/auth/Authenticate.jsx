@@ -67,7 +67,7 @@ function Authenticate({ params }) {
     }
 
     return (
-        <div className={`${styles.container} bg-[#d97f02] h-[100vh] text-[#d97f02]`} suppressHydrationWarning >
+        <div className={`${styles.container} bg-[#7f7d7900] h-[100vh] text-[#d97f02]`} suppressHydrationWarning >
             <input id="signup_toggle" type="checkbox" className={styles.signup_toggle} />
             <div className={styles.form}>
                 <div className={styles.form_front}>
@@ -80,7 +80,7 @@ function Authenticate({ params }) {
                             <input className="cursor-pointer hue-rotate-[76deg] " type="checkbox" name='checkbox' id="checkbox" onClick={() => setShowPass(!showPass)} />
                             <label
                                 htmlFor="checkbox"
-                                className="block text-[#d971f0]-700  font-medium cursor-pointer ">
+                                className="block text-black  font-medium cursor-pointer ">
                                 Show Password
                             </label>
                         </div>
@@ -89,7 +89,7 @@ function Authenticate({ params }) {
                     {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
                     <span className={styles.switch}>
                         Don't have an account?
-                        <label htmlFor="signup_toggle" className={styles.signup_tog}>Sign Up</label>
+                        <label htmlFor="signup_toggle" className={styles.signup_tog}> Sign Up</label>
                     </span>
                 </div>
                 <div className={styles.form_back}>
@@ -104,7 +104,7 @@ function Authenticate({ params }) {
                             <input className="cursor-pointer hue-rotate-[76deg] " type="checkbox" name='checkbox' id="checkbox" onClick={() => setShowPass(!showPass)} />
                             <label
                                 htmlFor="checkbox"
-                                className="block text-[#d971f0]-700  font-medium cursor-pointer ">
+                                className="block text-black font-medium cursor-pointer ">
                                 Show Password
                             </label>
                         </div>

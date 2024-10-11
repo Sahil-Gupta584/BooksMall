@@ -22,13 +22,15 @@
   justify-content: center;
   align-items: center;
   gap: 20px;
+  width: 350px;
   position: absolute;
   backface-visibility: hidden;
-  padding: 65px 45px;
+  padding: 50px 45px;
   border-radius: 15px;
-  background-color: #121212;
-  box-shadow: inset 2px 2px 10px rgba(0,0,0,1),
-  inset -1px -1px 5px rgba(255, 255, 255, 0.6);
+  /* background-color: #f99c2b; */
+  background-color: #f7952c;
+  box-shadow: inset 2px 2px 8px rgba(10, 5, 0, 0.356),
+  inset -1px -1px 5px rgba(200, 149, 110, 0.508);
 }
 
 .form_back {
@@ -37,36 +39,36 @@
 
 .form_details {
   font-size: 25px;
-  font-weight: 600;
+  font-weight: 700;
   padding-bottom: 10px;
-  color: #d971f0;
+  color: black;
 }
 
 .input {
-  width: 245px;
+  width: 250px;
   min-height: 45px;
-  color: #fff;
+  color: rgb(255, 255, 255);
   outline: none;
   transition: 0.35s;
   padding: 0px 7px;
-  background-color: #212121;
-  border-radius: 6px;
+  background-color: #000000;
+  border-radius: 10px;
   border: 2px solid #212121;
-  box-shadow: 6px 6px 10px rgba(0,0,0,1),
+  box-shadow: 2px 2px 5px rgba(0,0,0,1),
   1px 1px 10px rgba(255, 255, 255, 0.6);
 }
 
 .input::placeholder {
-  color: #d971f0;
+  color: rgb(146, 146, 146);
 }
 
 .input:focus::placeholder {
-  transition: 0.3s;
+  transition: 0.2s;
   opacity: 0;
 }
 
 .input:focus {
-  transform: scale(1.05);
+  transform: scale(1.01);
   box-shadow: 6px 6px 10px rgba(0,0,0,1),
   1px 1px 10px rgba(255, 255, 255, 0.6),
   inset 2px 2px 10px rgba(0,0,0,1),
@@ -76,28 +78,28 @@
 .btn {
   padding: 10px 35px;
   cursor: pointer;
-  background-color: #212121;
-  border-radius: 6px;
+  background-color: #000000;
+  border-radius: 10px;
   border: 2px solid #212121;
-  box-shadow: 6px 6px 10px rgba(0,0,0,1),
+  box-shadow: 2px 2px 5px rgba(0,0,0,1),
   1px 1px 10px rgba(255, 255, 255, 0.6);
-  color: #d971f0;
+  color: whitesmoke;
   font-size: 15px;
   font-weight: bold;
   transition: 0.35s;
 }
 
 .btn:hover {
-  transform: scale(1.05);
-  box-shadow: 6px 6px 10px rgba(0,0,0,1),
+  transform: scale(1.01);
+  box-shadow: 3px 3px 8px rgba(0,0,0,1),
   1px 1px 10px rgba(255, 255, 255, 0.6),
   inset 2px 2px 10px rgba(0,0,0,1),
-  inset -1px -1px 5px rgba(255, 255, 255, 0.6);
+  inset -1px -1px 5px rgba(168, 168, 168, 0.6);
 }
 
 .btn:focus {
-  transform: scale(1.05);
-  box-shadow: 6px 6px 10px rgba(0,0,0,1),
+  transform: scale(1.02);
+  box-shadow: 4px 4px 5px rgba(0,0,0,1),
   1px 1px 10px rgba(255, 255, 255, 0.6),
   inset 2px 2px 10px rgba(0,0,0,1),
   inset -1px -1px 5px rgba(255, 255, 255, 0.6);
@@ -105,14 +107,14 @@
 
 .switch {
   font-size: 13px;
-  color: #d971f0;
+  color: black;
 }
 
 .signup_tog {
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  text-decoration: underline;
-  color: #d971f0;
+  text-decoration: none;
+  color: rgb(79, 79, 246);
 }
 
 .signup_toggle:checked + .form {

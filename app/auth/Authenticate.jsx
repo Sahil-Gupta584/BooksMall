@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import styles from './Auth.module.css';
 import { account, verifyLogin, createUser } from '../appwrite/api';
 import { useRouter } from 'next/navigation';
+import PasswordStrengthBar from 'react-password-strength-bar';
 
 function Authenticate({ params }) {
 
@@ -98,6 +99,7 @@ function Authenticate({ params }) {
                         <input type="text" name="name" className={styles.input} placeholder="First and Last Name" required />
                         <input type="email" name="email" className={styles.input} placeholder="example@gmail.com" required />
                         <input type={showPass ? 'text' : 'password'} name="password" className={styles.input} placeholder="Password" required />
+                        <PasswordStrengthBar password={showPass} />
                         <input type={showPass ? 'text' : 'password'} className={styles.input} placeholder="Confirm Password" required />
                         <div className="flex gap-2 mt-1 cursor-pointer" >
 

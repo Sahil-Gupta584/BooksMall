@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { account, getUser, verifyLogin } from "../appwrite/api";
 import Link from "next/link";
 import { getAllBooks } from "../appwrite/api"; // Ensure this is imported
+import { Home, Search, ShoppingCart, User, Book, HelpCircle,Bell, Moon, Sun,ChevronDown  } from 'lucide-react';
 
 function Nav() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -49,20 +50,42 @@ function Nav() {
             setFilteredBooks(filtered);
         }
     }, [searchQuery, books]);
+   
 
+// const NavBar = () => {
+ 
     const shouldHideSellBtn =
         pathname === "/auth" ||
         pathname.startsWith("/book/") ||
         pathname.startsWith("/chat") ||
         pathname === "/sell";
 
-
+        // const NavBar = () => {
+        //     const [isDarkMode, setIsDarkMode] = useState(false);
+        //     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+          
+        //     const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+        //    ;loggedIn, toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+     
     return (
+       
         <nav className={`navbar ${pathname == "/auth" ? "hidden" : ""} bg-[#d97f02] shadow-[0_3px_6px_0_rgba(50,50,50,0.3)] `}>
+      
             <div className="flex items-center w-full relative">
     <Link className="btn btn-ghost text-xl" href="/">
+    <div className="container mx-auto flex items-center justify-between">
+        <div className="flex items-center">
+          <Book className="text-white mr-2" size={24} />
+         
+        </div>
+        
         BooksMall
+        </div>
+    
     </Link>
+
+  
+    
     <div className="relative w-[62%] ml-[13px]">
         <input
             type="text"
@@ -93,6 +116,62 @@ function Nav() {
         </div>
     </div>
 </div>
+
+
+
+    <nav className="p-4">
+       <div className="container mx-auto flex items-center justify-between">
+        <div className="flex items-center">
+         
+        
+        </div>
+        
+    
+        <div className="flex-grow mx-4">
+          <div className="relative">
+            {/* <input
+              type="text"
+              placeholder="Search books..."
+              className="w-full py-2 px-4 rounded-full bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-300"
+            /> */}
+           
+          </div>
+        </div>
+        <div className="flex items-center space-x-6">
+        <a href="#" className="text-white hover:text-orange-200 flex flex-col items-center">
+            <Home size={20} />
+           
+            <span className="text-xs mt-1">Home</span>
+          </a>
+          
+          <a href="#" className="text-white hover:text-orange-200 flex flex-col items-center">
+            <ShoppingCart size={20} />
+            
+            <span className="text-xs mt-1">Cart</span>
+          </a>
+          
+          {/* <a href="#" className="text-white hover:text-orange-200 flex flex-col items-center">
+            <User size={20} />
+            <span className="text-xs mt-1">Profile</span>
+          </a> */}
+          <a href="#" className="text-white hover:text-orange-200 flex flex-col items-center">
+            <HelpCircle size={20} />
+            
+            <span className="text-xs mt-1">Help</span>
+
+          </a>
+          <a href="#" className="text-white hover:text-orange-200 flex flex-col items-center relative">
+            <Bell size={20} />
+           
+            <span className="text-xs mt-1">Notifications</span>
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+          </a>
+          
+         
+        </div>
+      </div>
+    </nav>
+  
 
             <div className="flex-none gap-2">
                 <div className={`${shouldHideSellBtn ? "hidden" : ""}`} >

@@ -72,7 +72,7 @@ function Authenticate({ params }) {
     };
 
     return (
-        <div className={`${styles.container} bg-[#d97f02] h-[100vh] text-[#d97f02]`} suppressHydrationWarning >
+        <div className={`${styles.container} bg-[#d97f02] h-[100vh] text-[#f0adf6]`} suppressHydrationWarning >
             <input id="signup_toggle" type="checkbox" className={styles.signup_toggle} />
             <div className={styles.form}>
                 <div className={styles.form_front}>
@@ -82,10 +82,10 @@ function Authenticate({ params }) {
                         <input type={showPass ? 'text' : 'password'} name="password" className={styles.input} placeholder="Password" required />
                         <div className="flex gap-2 mt-1 cursor-pointer" >
 
-                            <input className="cursor-pointer hue-rotate-[76deg] " type="checkbox" name='checkbox' id="checkbox" onClick={() => setShowPass(!showPass)} />
+                            <input className="cursor-pointer hue-rotate-[76deg] -mt-2 " type="checkbox" name='checkbox' id="checkbox" onClick={() => setShowPass(!showPass)} />
                             <label
                                 htmlFor="checkbox"
-                                className="block text-[#d971f0]-700  font-medium cursor-pointer ">
+                                className="block text-[#d971f0]-100 text-sm font-medium cursor-pointer -mt-2  ">
                                 Show Password
                             </label>
                         </div>
@@ -94,7 +94,7 @@ function Authenticate({ params }) {
                     {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
                     <span className={styles.switch}>
                         Don't have an account?
-                        <label htmlFor="signup_toggle" className={styles.signup_tog}>Sign Up</label>
+                        <label htmlFor="signup_toggle" className={styles.signup_tog}> Sign Up</label>
                     </span>
                 </div>
                 <div className={styles.form_back}>
@@ -107,10 +107,10 @@ function Authenticate({ params }) {
                         <input type={showPass ? 'text' : 'password'} className={styles.input} placeholder="Confirm Password" required />
                         <div className="flex gap-2 mt-1 cursor-pointer" >
 
-                            <input className="cursor-pointer hue-rotate-[76deg] " type="checkbox" name='checkbox' id="checkbox" onClick={() => setShowPass(!showPass)} />
+                            <input className="cursor-pointer hue-rotate-[76deg] -mt-2" type="checkbox" name='checkbox' id="signUp_checkbox" onClick={() => setShowPass(!showPass)} />
                             <label
-                                htmlFor="checkbox"
-                                className="block text-[#d971f0]-700  font-medium cursor-pointer ">
+                                htmlFor="signUp_checkbox"
+                                className="block text-[#d971f0]-100 text-sm font-medium cursor-pointer -mt-2">
                                 Show Password
                             </label>
                         </div>
@@ -119,7 +119,7 @@ function Authenticate({ params }) {
                     {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
                     <span className={styles.switch}>
                         Already have an account?
-                        <label htmlFor="signup_toggle" className={styles.signup_tog}>LogIn</label>
+                        <label htmlFor="signup_toggle" className={styles.signup_tog}> LogIn</label>
                     </span>
                 </div>
             </div>

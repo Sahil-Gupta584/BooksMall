@@ -72,7 +72,7 @@ function Authenticate({ params }) {
     };
 
     return (
-        <div className={`${styles.container} bg-[#d97f02] h-[100vh] text-[#d97f02]`} suppressHydrationWarning >
+        <div className={`${styles.container} bg-[#d97f02] h-[100vh] text-[#d97f02] overflow-scroll`} suppressHydrationWarning >
             <input id="signup_toggle" type="checkbox" className={styles.signup_toggle} />
             <div className={styles.form}>
                 <div className={styles.form_front}>

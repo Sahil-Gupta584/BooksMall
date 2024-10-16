@@ -52,6 +52,27 @@ To run the project locally, follow these steps:
 4. **Open your browser:**
    Navigate to [http://localhost:3000](http://localhost:3000) to see the result. You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
+### Running with Docker 🐳
+
+If you prefer to use Docker, follow these steps:
+
+1. **Build the Docker image:** 
+   In the root of your project, run the following command to build the Docker image:
+
+   ```bash
+   docker build -t booksmall-app .
+   ```
+
+2. **Run the Docker container:** 
+   Once the image is built, run the container with the following command:
+
+   ```bash
+   docker run -p 3000:3000 booksmall-app
+   ```
+
+3. **Access the application:** 
+   Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to see the app running inside the Docker container.
+
 ### Issues and Contributions 🤝
 
 I encourage you to explore the deployed version and check for any issues. Please feel free to raise issues or submit pull requests (PRs). Your contributions to improve the platform and documentation are greatly appreciated!

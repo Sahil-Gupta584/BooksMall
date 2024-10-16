@@ -34,13 +34,24 @@ function ShowCards() {
             <div className="w-full">
                 <p className="font-bold text-center md:text-start">Available Books</p>
                 <div className="w-full flex flex-wrap justify-center md:justify-start">
+  {Array.isArray(books) && books.length > 0 ? (
+    books.map((b) => (
+      <Card book={b} key={b.id} />
+    ))
+  ) : (
+    <p></p>
+  )}
+</div>
+                {/* <div className="w-full flex flex-wrap justify-center md:justify-start">
                     {books.length > 0 && books.map((b, i) => (
                         <Card book={b} key={i} />
                     ))}
-                </div>
+                </div> */}
             </div>
+          
+
             <div className="w-full">
-                <p className="font-bold text-center md:text-start">These are just some demo cards to see fully funtional Card make a new by clicking on SELL</p>
+                <p className="font-bold text-center md:text-start"></p>
                 <div className="flex w-full flex-wrap justify-center md:justify-start">
                     {imgUrls.map((e, i) => (
                         <Card src={e.previewURL} key={i} />

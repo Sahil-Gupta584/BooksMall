@@ -26,7 +26,8 @@
   backface-visibility: hidden;
   padding: 65px 45px;
   border-radius: 15px;
-  background-color: #121212;
+  background-color: black;
+
   box-shadow: inset 2px 2px 10px rgba(0,0,0,1),
   inset -1px -1px 5px rgba(255, 255, 255, 0.6);
 }
@@ -39,64 +40,70 @@
   font-size: 25px;
   font-weight: 600;
   padding-bottom: 10px;
-  color: #d971f0;
+  color:rgb(255, 255, 255);
 }
 
 .input {
   width: 245px;
   min-height: 45px;
-  color: #fff;
+  color: rgb(19, 18, 18);
+  font-size: 0.9rem;
+  font-weight: 500;
   outline: none;
   transition: 0.35s;
-  padding: 0px 7px;
-  background-color: #212121;
-  border-radius: 6px;
-  border: 2px solid #212121;
+  padding: 0px 15px;
+  background-color: white; 
+  border-radius: 23px;
+  border: 2px solid #f6ac45;
   box-shadow: 6px 6px 10px rgba(0,0,0,1),
   1px 1px 10px rgba(255, 255, 255, 0.6);
 }
 
 .input::placeholder {
-  color: #d971f0;
+  color: rgba(126, 126, 126, 0.914);
 }
 
 .input:focus::placeholder {
-  transition: 0.3s;
+  transition: 0.2s;
   opacity: 0;
 }
 
 .input:focus {
-  transform: scale(1.05);
-  box-shadow: 6px 6px 10px rgba(0,0,0,1),
-  1px 1px 10px rgba(255, 255, 255, 0.6),
-  inset 2px 2px 10px rgba(0,0,0,1),
-  inset -1px -1px 5px rgba(255, 255, 255, 0.6);
+  transform: scale(1.01);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5),  /* Softer outer shadow */
+              1px 1px 5px rgba(255, 255, 255, 0.4), /* Reduced white highlight */
+              inset 1px 1px 5px rgba(0, 0, 0, 0.5),  /* Softer inner shadow */
+              inset -1px -1px 3px rgba(255, 255, 255, 0.4);
 }
+
+
+
 
 .btn {
   padding: 10px 35px;
   cursor: pointer;
-  background-color: #212121;
+  background-color: #2cbdfc;
   border-radius: 6px;
   border: 2px solid #212121;
-  box-shadow: 6px 6px 10px rgba(0,0,0,1),
+  box-shadow: 1px 1px 15px rgba(0,0,0,1),
   1px 1px 10px rgba(255, 255, 255, 0.6);
-  color: #d971f0;
+  color: black;
   font-size: 15px;
   font-weight: bold;
   transition: 0.35s;
 }
 
 .btn:hover {
-  transform: scale(1.05);
-  box-shadow: 6px 6px 10px rgba(0,0,0,1),
-  1px 1px 10px rgba(255, 255, 255, 0.6),
-  inset 2px 2px 10px rgba(0,0,0,1),
-  inset -1px -1px 5px rgba(255, 255, 255, 0.6);
+  transform: scale(1.001);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5),  
+              1px 1px 5px rgba(255, 255, 255, 0.4), 
+              inset 1px 1px 3px rgba(0, 0, 0, 0.5),  
+              inset -1px -1px 1px rgba(255, 255, 255, 0.4);
 }
 
+
 .btn:focus {
-  transform: scale(1.05);
+  transform: scale(1.01);
   box-shadow: 6px 6px 10px rgba(0,0,0,1),
   1px 1px 10px rgba(255, 255, 255, 0.6),
   inset 2px 2px 10px rgba(0,0,0,1),
@@ -105,14 +112,14 @@
 
 .switch {
   font-size: 13px;
-  color: #d971f0;
+  color: rgb(207, 197, 197);
 }
 
 .signup_tog {
   font-weight: 700;
   cursor: pointer;
-  text-decoration: underline;
-  color: #d971f0;
+  text-decoration: none;
+  color: #29ade6;
 }
 
 .signup_toggle:checked + .form {

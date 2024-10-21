@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import SellBtn from "./Sellbtn/SellBtn";
 import { usePathname, useRouter } from "next/navigation";
-import { account, getUser, verifyLogin } from "../appwrite/api";
+import {  getUser, verifyLogin } from "../appwrite/api";
 import Link from "next/link";
 import { getAllBooks } from "../appwrite/api"; // Ensure this is imported
+import { auth } from "@/auth";
 
 function Nav() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -16,15 +17,11 @@ function Nav() {
     const router = useRouter();
 
     useEffect(() => {
-        async function fetch() {
-            const res = await verifyLogin();
-            if (res) {
-                setLoggedIn(true);
-                const user = await getUser(res.$id);
-                setUser(user);
-            }
-        }
-        fetch();
+        (async()=>{
+            const session = await getUser()
+            console.log('session:',session);
+            
+        })()
     }, [router]);
 
     useEffect(() => {
@@ -60,44 +57,44 @@ function Nav() {
     return (
         <nav className={`navbar ${pathname == "/auth" ? "hidden" : ""} bg-[#d97f02] shadow-[0_3px_6px_0_rgba(50,50,50,0.3)] `}>
             <div className="flex items-center w-full relative">
-    <Link className="btn btn-ghost text-xl" href="/">
-        BooksMall
-    </Link>
-    <div className="relative w-[62%] ml-[13px]">
-        <input
-            type="text"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-            className="search input input-bordered w-full bg-[wheat] border-0 h-[2.7rem] pl-4"
-        />
-        <div className={`dropdown-content absolute bg-white shadow mt-2 p-2 w-full z-50 ${filteredBooks.length > 0 || searchQuery ? "block" : "hidden"}`}>
-            {filteredBooks.length > 0 ? (
-                <ul>
-                    {filteredBooks.map((book, i) => (
-                        <li key={i} className="p-2 border-b border-gray-200">
-                            <Link href={`/book/${book.$id}`}>
-                                <div>
-                                    <p className="font-bold">{book.title}</p>
-                                    <p className="text-sm text-gray-600">
-                                        {book.category}, {book.state} - {book.city}
-                                    </p>
-                                </div>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            ) : searchQuery && (
-                <p className="p-2 text-gray-500">No results found</p>
-            )}
-        </div>
-    </div>
-</div>
+                <Link className="btn btn-ghost text-xl" href="/">
+                    BooksMall
+                </Link>
+                <div className="relative w-[62%] ml-[13px]">
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+                        className="search input input-bordered w-full bg-[wheat] border-0 h-[2.7rem] pl-4"
+                    />
+                    <div className={`dropdown-content absolute bg-white shadow mt-2 p-2 w-full z-50 ${filteredBooks.length > 0 || searchQuery ? "block" : "hidden"}`}>
+                        {filteredBooks.length > 0 ? (
+                            <ul>
+                                {filteredBooks.map((book, i) => (
+                                    <li key={i} className="p-2 border-b border-gray-200">
+                                        <Link href={`/book/${book.$id}`}>
+                                            <div>
+                                                <p className="font-bold">{book.title}</p>
+                                                <p className="text-sm text-gray-600">
+                                                    {book.category}, {book.state} - {book.city}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : searchQuery && (
+                            <p className="p-2 text-gray-500">No results found</p>
+                        )}
+                    </div>
+                </div>
+            </div>
 
             <div className="flex-none gap-2">
                 <div className={`${shouldHideSellBtn ? "hidden" : ""}`} >
 
-                <SellBtn />
+                    <SellBtn />
                 </div>
 
                 <div className="dropdown dropdown-end m-2" >
@@ -186,10 +183,10 @@ function Nav() {
                                     <li className="pt-1">
                                         <button
                                             className="border-0 outline-0 hover:bg-[gray] hover:text-[white] py-0 px-2"
-                                            onClick={async () => {
-                                                await account.deleteSessions();
-                                                window.location.reload();
-                                            }}
+                                            // onClick={async () => {
+                                            //     await account.deleteSessions();
+                                            //     window.location.reload();
+                                            // }}
                                         >
                                             {" "}
                                             Log out

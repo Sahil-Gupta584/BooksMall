@@ -1,7 +1,27 @@
-
+'use server';
 import { Query } from "appwrite";
 import { ID, account, database, storage, avatar, appwriteConfig } from "./config";
+import { auth, signIn, signOut } from "@/auth";
 
+export async function handleSignUp(name, email, password) {
+
+  await signIn('credentials', { name, email, password, redirectTo:'/' });
+ 
+}
+
+export async function handleLogin(email, password) {
+  try {
+    await signIn('credentials', { email, password,redirectTo:'/' });
+  } catch (error) {
+    console.log(error, 'from handleLogin');
+    throw error
+  }
+
+}
+
+export async function logOut() {
+  await signOut({redirectTo:'/auth'})
+}
 export async function verifyLogin() {
   try {
     return await account.get();
@@ -24,7 +44,7 @@ export async function uploadFile(imageFile) {
     console.log(error.message, error, "from uploadFilwe");
   }
 }
-export function getFilePreview(fileId) {
+export async function getFilePreview(fileId) {
   try {
     const fileUrl = storage.getFilePreview(
       appwriteConfig.storageId,
@@ -169,9 +189,10 @@ export async function createUser(email, password, name) {
     return res;
   } catch (error) {
     console.log(error, 'from createUser');
-    return false;
+    throw error;
   }
 }
+
 
 export async function getChatPartners(currentUserId) {
   console.log('currentUserId: ', currentUserId);
@@ -249,11 +270,7 @@ export async function getUser(Id) {
   console.log(`getting user:`, Id)
   try {
 
-    return await database.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      Id
-    )
+    return await auth()
   } catch (error) {
     console.log(error, 'from getUser');
   }
@@ -368,4 +385,3 @@ export async function getAllBooks() {
     return false
   }
 }
-export { account, storage, database };

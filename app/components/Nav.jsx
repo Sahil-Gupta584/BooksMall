@@ -5,8 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { account, getUser, verifyLogin } from "../appwrite/api";
 import Link from "next/link";
 import { getAllBooks } from "../appwrite/api"; // Ensure this is imported
+import { useTheme } from '../context/themeContext';
 
 function Nav() {
+    const { darkMode, toggleDarkMode } = useTheme(); //Dark Mode
     const [loggedIn, setLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
     const [books, setBooks] = useState([]); // To store all books
@@ -201,6 +203,9 @@ function Nav() {
                 </div>
 
             </div>
+            <button onClick={toggleDarkMode} className="btn btn-ghost">
+        {darkMode ? '☀️' : '🌙'}
+      </button>
         </nav>
     );
 }

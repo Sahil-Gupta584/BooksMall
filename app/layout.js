@@ -1,9 +1,11 @@
+// app/layout.js
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "./components/Nav";
 import { SocketProvider } from "./context/socketContext";
 import { ChatProvider } from "./context/chatContext";
-
+import { ThemeProvider } from './context/themeContext';
+import ThemeWrapper from './components/ThemeWrapper';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,20 +14,17 @@ export const metadata = {
   description: "Sell and purchase second hand books to increase productivity",
 };
 
-export default async function RootLayout({ children }) {
-
+export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-theme="light" className="bg-[#f3eaea]">
-      <body className={inter.className}>
-
-        <SocketProvider >
+    <ThemeProvider>
+      <ThemeWrapper>
+        <SocketProvider>
           <ChatProvider>
             <Nav />
             {children}
           </ChatProvider>
         </SocketProvider>
-
-      </body>
-    </html>
+      </ThemeWrapper>
+    </ThemeProvider>
   );
 }

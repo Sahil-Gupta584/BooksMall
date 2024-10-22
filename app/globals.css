@@ -110,7 +110,12 @@
     justify-content: space-evenly;
   }
 }
-
+/* Transition for Dark Mode */
+@layer base {
+  body {
+    @apply transition-colors duration-200;
+  }
+}
 
 
 

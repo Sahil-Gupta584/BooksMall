@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-      "appwrite": "^15.0.0",
+    "appwrite": "^15.0.0",
     "axios": "^1.7.2",
     "next": "14.2.5",
+    "onemore": "file:",
     "react": "^18",
     "react-dom": "^18",
     "react-password-strength-bar": "^0.4.1",

@@ -1,6 +1,10 @@
 
 import { Query } from "appwrite";
+
 import { ID, account, database, storage, avatar, appwriteConfig } from "./config";
+
+
+
 
 export async function verifyLogin() {
   try {

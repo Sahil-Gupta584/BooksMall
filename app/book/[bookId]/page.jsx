@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ID } from 'appwrite';
 import Protect from '@/app/components/Protect';
+import Footer from "./components/Footer/Footer";
 
  function Page({ params,currentUser }) {
     const [bookData, setBookData] = useState(null);
@@ -126,7 +127,7 @@ import Protect from '@/app/components/Protect';
                                     Chat With Seller
                                 </Link>
                             )}
-
+                            <Footer />
                         </div>
                     </div>
                 </div>

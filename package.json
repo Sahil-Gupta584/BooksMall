@@ -25,6 +25,8 @@
     "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
+    "@swc/cli": "^0.4.1-nightly.20240914",
+    "@swc/core": "^1.7.35",
     "daisyui": "^4.12.10",
     "postcss": "^8",
     "tailwind-scrollbar": "^3.1.0",

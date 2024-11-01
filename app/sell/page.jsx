@@ -1,16 +1,15 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import addPhoto from "../../public/addphoto.png";
-import { account, saveToDb } from "../appwrite/api.js";
+import { getCurrUser, saveToDb } from "../appwrite/api.js";
 import { useRouter } from "next/navigation";
 import { CurrentLocation, CustomLocation } from "../components/Location";
-import Protect from "../components/Protect";
 
-const Sell = ({ params, currentUser }) => {
+const Sell = () => {
   const [coverImageIndex, setCoverImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const router = useRouter();
-
+  const [currUser, setcurrUser] = useState(null)
   const [bookData, setBookData] = useState({
     title: "",
     category: "",
@@ -20,6 +19,12 @@ const Sell = ({ params, currentUser }) => {
   });
 
   const formRef = useRef(null);
+  useEffect(() => {
+    (async () => {
+      const user = await getCurrUser();
+      setcurrUser(user)
+    })()
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +43,8 @@ const Sell = ({ params, currentUser }) => {
   };
 
   const handleSubmit = async (e) => {
+    console.log('currUserID:',currUser);
+
     e.preventDefault();
     const location = {
       state: e.target.elements.namedItem('state').value,
@@ -46,8 +53,18 @@ const Sell = ({ params, currentUser }) => {
     if (formRef.current.checkValidity() && images.length > 0) {
 
       try {
+        const formData = new FormData();
+        formData.append("bookData", JSON.stringify(bookData));
+        formData.append("coverImageIndex", coverImageIndex);
+        formData.append("location", JSON.stringify(location));
+        formData.append("ownerId", currUser._id);
 
-        const res = await saveToDb(bookData, coverImageIndex, images, location, currentUser.$id);
+        // Add all images to formData
+        images.forEach((image, index) => {
+          formData.append(`images[${index}]`, image);
+        });
+
+        const res = await saveToDb(formData);
         console.log(res);
         if (res) router.push("/");
       } catch (err) {
@@ -296,4 +313,4 @@ const Sell = ({ params, currentUser }) => {
   );
 };
 
-export default Protect(Sell);
+export default Sell;

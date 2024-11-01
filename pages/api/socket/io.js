@@ -34,7 +34,8 @@ const SocketHandler = (req, res) => {
 
         onlineUsers.set(userId, socket.id);
         broadcastOnlineUsers()
-
+        console.log('OnlineUsers',onlineUsers);
+        
         // Deliver any offline messages for this user
         const offlineMessageQueue = offlineMessages.get(userId) || [];
         console.log('offlinemessages', offlineMessageQueue)

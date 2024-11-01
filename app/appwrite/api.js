@@ -1,341 +1,260 @@
 'use server';
-import { Query } from "appwrite";
-import { ID, account, database, storage, avatar, appwriteConfig } from "./config";
 import { auth, signIn, signOut } from "@/auth";
+import cloudinary from './cloudinary';
+import { Books, Users, Chats, Messages } from "@/mongodb/models";
+import { dbConnect } from "@/mongodb";
 
-export async function handleSignUp(name, email, password) {
-
-  await signIn('credentials', { name, email, password, redirectTo:'/' });
- 
+export async function handleMagicLink(formdata) {
+  await signIn('nodemailer',formdata)
 }
 
-export async function handleLogin(email, password) {
-  try {
-    await signIn('credentials', { email, password,redirectTo:'/' });
-  } catch (error) {
-    console.log(error, 'from handleLogin');
-    throw error
-  }
-
+export async function handleGoogleAuth() {
+  await signIn('google', { redirectTo: '/' });
 }
+
 
 export async function logOut() {
-  await signOut({redirectTo:'/auth'})
+  await signOut({ redirectTo: '/auth' })
 }
+
 export async function verifyLogin() {
   try {
-    return await account.get();
+    return await auth();
   } catch (error) {
-    console.log(error.message, error, 'from verifylogin')
+    console.log(error.message, error, 'from verifyLogin');
     return false;
   }
 }
 
-export async function uploadFile(imageFile) {
+export async function getUser(userId) {
   try {
-    const uploadedFile = await storage.createFile(
-      appwriteConfig.storageId,
-      ID.unique(),
-      imageFile,
-    );
-
-    return uploadedFile;
+    const user = await Users.findById(userId)
+    return JSON.parse(JSON.stringify(user));
   } catch (error) {
-    console.log(error.message, error, "from uploadFilwe");
-  }
-}
-export async function getFilePreview(fileId) {
-  try {
-    const fileUrl = storage.getFilePreview(
-      appwriteConfig.storageId,
-      fileId,
-      2000,
-      2000,
-      "top",
-      100,
-    );
-
-    console.log(fileUrl, "from getFilePreview");
-    return fileUrl.href;
-  } catch (error) {
-    console.log(error, 'from getFilePreview');
+    console.log(error, 'from getUser');
+    throw error
   }
 }
 
-export async function saveToDb(bookData, coverImageIndex, images, location, ownerId) {
+export async function uploadFile(file) {
   try {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-    const files = images.filter(image => image instanceof File);
-    const urls = images.filter(image => typeof image === 'string');
-
-    const uploadedFile = await Promise.all(
-      files.map(async (image) => await uploadFile(image)),
+    const result = await new Promise(
+      (resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "Bookmall" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(buffer);
+      }
     );
-    console.log('uploadedFile:', uploadedFile)
+    return result.secure_url;
+  } catch (error) {
+    console.log(error.message, error, "from uploadFile");
+  }
+}
 
-    const bookImages = await Promise.all(
-      uploadedFile.map(async (file) => getFilePreview(file.$id)),
-    );
+export async function saveToDb(formdata) {
+  try {
+    const bookData = JSON.parse(formdata.get('bookData'));
+    const coverImageIndex = Number(formdata.get('coverImageIndex'));
+    const location = JSON.parse(formdata.get('location'));
+    const ownerId = formdata.get('ownerId');
 
-    const imageUrls = [...urls, ...bookImages];
-    console.log('imageUrls:', imageUrls)
-    const bookDetails = { ...bookData, coverImageIndex, bookImages, state: location.state, city: location.city, timestamp: Date.now().toString(), ownerId };
-    console.log(bookDetails);
+    let urls = [];
 
-    const newBook = await database.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.booksCollectionId,
-      ID.unique(),
-      bookDetails,
-    );
+    for (let [key, value] of formdata.entries()) {
+      if (key.startsWith('images')) {
+        const index = Number(key.match(/\[(\d+)\]/)[1]);
+        if (value instanceof File) {
+          const url = await uploadFile(value);
+          urls[index] = url;
+        } else if (typeof value === 'string') {
+          urls[index] = value;
+        }
+      }
+    }
+
+    const bookDetails = {
+      ...bookData,
+      coverImageIndex,
+      bookImages: urls,
+      state: location.state,
+      city: location.city,
+      timestamp: Date.now().toString(),
+      ownerId
+    };
+
+    await dbConnect();
+    const newBook = await Books.create(bookDetails);
+
     return true;
   } catch (err) {
     console.log(err.message, err, "from saveToDb");
     return false;
   }
 }
-export async function updateBook(bookId, bookData, coverImageIndex, images) {
+
+export async function updateBook(bookId, formdata) {
   try {
+    const bookData = JSON.parse(formdata.get('bookData'));
+    const coverImageIndex = Number(formdata.get('coverImageIndex'));
+    let urls = [];
 
-    const files = images.filter(image => image instanceof File);
-    const urls = images.filter(image => typeof image === 'string');
+    for (let [key, value] of formdata.entries()) {
+      if (key.startsWith('images')) {
+        const index = Number(key.match(/\[(\d+)\]/)[1]);
+        if (value instanceof File) {
+          const url = await uploadFile(value);
+          urls[index] = url;
+        } else if (typeof value === 'string') {
+          urls[index] = value;
+        }
+      }
+    }
 
-    const uploadedFile = await Promise.all(
-      files.map(async (image) => await uploadFile(image)),
-    );
-    console.log('uploadedFile:', uploadedFile)
+    const bookDetails = { ...bookData, coverImageIndex, bookImages: urls, timestamp: Date.now().toString() };
 
-    const bookImages = await Promise.all(
-      uploadedFile.map(async (file) => getFilePreview(file.$id)),
-    );
+    await dbConnect();
+    const updatedBook = await Books.findByIdAndUpdate(bookId, bookDetails, { new: true });
 
-    const imageUrls = [...urls, ...bookImages];
-    console.log('imageUrls:', imageUrls)
-    const bookDetails = { ...bookData, coverImageIndex, bookImages: [...imageUrls], timestamp: Date.now().toString() };
-    console.log(bookDetails);
-
-    const updatedBook = await database.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.booksCollectionId,
-      bookId,
-      bookDetails,
-    );
-    console.log('updatedBook:', updatedBook)
     return true;
   } catch (err) {
-    console.log(err.message, err, "from updateBook  ");
+    console.log(err.message, err, "from updateBook");
     return false;
   }
 }
 
 export async function getBook(bookId) {
   try {
-    const book = await database.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.booksCollectionId,
-      bookId
-    )
-    return book
+    console.log('getbook just for you!');
+    
+    await dbConnect();
+    const book = await Books.findById(bookId);
+    return JSON.parse(JSON.stringify(book));
   } catch (error) {
-    console.log(error, 'from getBook')
-    return error
+    console.log(error, 'from getBook');
+    return error;
   }
 }
 
 export async function getUserBooks(userId) {
   try {
-
-    const response = await database.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.booksCollectionId,
-      [Query.equal("ownerId", userId), Query.orderDesc("$createdAt")]
-    );
-
-    return response.documents;
+    await dbConnect();
+    const books = await Books.find({ ownerId: userId });
+    return JSON.parse(JSON.stringify(books));
   } catch (err) {
     console.log(err.message, err, "from getUserBooks");
+    throw err;
   }
 }
 
-export async function deleteUserBook(userId, bookId) {
+export async function deleteUserBook(bookId) {
   try {
-
-    const res = await database.deleteDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.booksCollectionId,
-      bookId
-    )
-
-    console.log(res, 'book deleted');
-    return true
+    await dbConnect();
+    await Books.findByIdAndDelete(bookId);
+    console.log('Book deleted');
+    return true;
   } catch (error) {
     console.log(error.message, error, 'from deleteUserBook');
-    return false
+    return false;
   }
-
 }
-export async function createUser(email, password, name) {
+
+// export async function getChatPartners(currentUserId) {
+//   try {
+//     await dbConnect();
+//     const user = await Users.findById(currentUserId).populate('chatPartners');
+//     const partners = user.chatPartners.map(async (partner) => await getUser(partner._id));
+//     return Promise.all(partners);
+//   } catch (error) {
+//     console.log(error, 'from getChatPartners');
+//   }
+// }
+
+export async function getChat(chatId, sellerId, currentUserId) {
   try {
-    const user = await account.create(ID.unique(), email, password, name.toUpperCase());
-    localStorage.setItem('currentUserId', user.$id)
-    const avatarUrl = avatar.getInitials(name).href;
-    const res = await database.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      user.$id,
-      { name, avatarUrl, email }
-    );
-    console.log(res);
-    return res;
+    await dbConnect();
+    const chat = await Chats.findById(chatId).populate('participants');
+    console.log('chat', chat);
+
+    if (!chat) {
+      console.log('creating new chat!');
+      
+      let newChat = await Chats.create({_id:chatId , participants: [currentUserId, sellerId] });
+      newChat = await newChat.populate('participants')
+      console.log('newChat', newChat);
+
+      return JSON.parse(JSON.stringify(newChat));
+    }
+    
+    return JSON.parse(JSON.stringify(chat));
   } catch (error) {
-    console.log(error, 'from createUser');
+    console.log(error, 'from getChat');
+  }
+}
+
+export async function getCurrUser() {
+  try {
+    await dbConnect();
+    const session = await auth();
+console.log('session',session);
+
+    if (session) {
+      const user = await Users.findOne({ email: session.user.email }).populate({path:'chats', populate: {path:'participants'}})
+      console.log('user:', user);
+      const parsed = JSON.parse(JSON.stringify(user))
+      return parsed;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log(error, 'from getCurrUser');
     throw error;
   }
 }
 
-
-export async function getChatPartners(currentUserId) {
-  console.log('currentUserId: ', currentUserId);
-
-  try {
-    const res = await database.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      currentUserId || currentUserId.$id
-    );
-    const partners = res.chatPartners.map(async (p, i) => await getUser(p))
-    console.log(res)
-    return Promise.all(partners)
-  } catch (error) {
-    console.log(error, 'from getChatPartners')
-  }
-}
-
-export async function getChat(chatId, sellerId, currentUser) {
-  console.log('gettingChat', chatId);
-  console.log('sellerId', sellerId)
-  console.log('currenUserId', currentUser?.$id)
-  try {
-    // Try to get the existing chat
-    const existingChat = await database.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.chatCollectionId,
-      chatId
-    );
-
-    console.log('Chat already exists:', existingChat);
-    return existingChat;
-  } catch (error) {
-    // If the error is 'document not found', create a new chat
-    if (error.code === 404) {
-      console.log('Chat not found, creating new chat');
-      try {
-        const newChat = await database.createDocument(
-          appwriteConfig.databaseId,
-          appwriteConfig.chatCollectionId,
-          chatId,
-          {
-            participants: [currentUser.$id, sellerId]
-          }
-        );
-
-        if (!currentUser.chats.includes(chatId)) {
-          console.log('updated chats for user')
-          await database.updateDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.userCollectionId,
-            currentUser.$id,
-            {
-              chats: [
-                ...currentUser.chats,
-                newChat.$id
-              ]
-            }
-          )
-        }
-
-        // console.log('Created new chat:', newChat);
-        return newChat;
-      } catch (createError) {
-        console.log('Error creating new chat:', createError.message, createError);
-      }
-    } else {
-      // If it's a different error, log and rethrow it
-      console.log(error, 'Error in getChat');
-    }
-  }
-}
-
-export async function getUser(Id) {
-  console.log(`getting user:`, Id)
-  try {
-
-    return await auth()
-  } catch (error) {
-    console.log(error, 'from getUser');
-  }
-}
-
-// Add these functions to appwrite/api.js
-
 export async function uploadMessage(message) {
   try {
-    console.log('message:', message)
-    const res = await database.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.messageCollectionId,
-      ID.unique(),
-      { ...message }
-    );
+    await dbConnect();
+    await Messages.create(message);
   } catch (error) {
     console.log(error, 'from uploadMessage');
   }
 }
 
 export async function getPreviousMessages(chatId) {
-  console.log('getting previous messages of chat', chatId)
   try {
-    const messages = await database.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.messageCollectionId,
-      [
-        Query.equal('chatId', chatId),
-        Query.orderAsc('timestamp'),
-        Query.limit(10000)
-      ]
-    );
-    return messages.documents;
+    await dbConnect();
+    const messages = await Messages.find({ chatId }).sort({ timestamp: 1 });
+    return JSON.parse(JSON.stringify(messages));
   } catch (error) {
     console.log(error, 'from getPreviousMessages');
     return [];
   }
 }
 
-export async function deleteDocument(params) {
-  await database.deleteDocument(
-    appwriteConfig.databaseId,
-    appwriteConfig.messageCollectionId,
-    params
-  )
+export async function deleteDocument(messageId) {
+  try {
+    await dbConnect();
+    await Messages.findByIdAndDelete(messageId);
+  } catch (error) {
+    console.log(error, 'from deleteDocument');
+  }
 }
 
 export async function updateMessageSeen(chatId) {
   try {
-
-    console.log('updating message seen for chat', chatId)
-    const messages = await getPreviousMessages(chatId);
+    await dbConnect();
+    const messages = await Messages.find({ chatId });
     messages.forEach(async (message) => {
-
-      await database.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.messageCollectionId,
-        message.$id,
-        {
-          status: 'seen',
-        }
-      )
-
-    })
+      await Messages.findByIdAndUpdate(message._id, { status: 'seen' });
+    });
   } catch (error) {
     console.log(error.message, error, 'from updateMessageSeen');
   }
@@ -343,45 +262,31 @@ export async function updateMessageSeen(chatId) {
 
 export async function addChatToUser(currentUserId, chatId) {
   try {
-    const user = await getUser(currentUserId)
-
+    console.log('Adding new chat to user');
+    
+    await dbConnect();
+    let user = await Users.findById(currentUserId);
+    console.log('user.chats from addChat',user.chats);
+    console.log('!user.chats.includes(chatId):',user.chats.includes(chatId));
+    
     if (!user.chats.includes(chatId)) {
-
-      await database.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId,
-        currentUserId,
-        {
-          chats: [
-            ...user.chats,
-            chatId
-          ]
-        }
-
-      )
-
-      console.log('updated user chats')
+      user.chats.push([chatId]);
+      await user.save();
+      console.log('Added new chat to user');
     }
   } catch (error) {
     console.log(error, 'from addChatToUser');
-    return error
+    throw error;
   }
 }
 
 export async function getAllBooks() {
   try {
-
-    const res = await database.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.booksCollectionId,
-      [
-        Query.orderAsc('timestamp'),
-      ]
-
-    )
-    return res.documents
+    await dbConnect();
+    const books = await Books.find().sort({ timestamp: 1 });
+    return JSON.parse(JSON.stringify(books));
   } catch (error) {
     console.log(error.message, error, 'from getAllBooks');
-    return false
+    return false;
   }
 }

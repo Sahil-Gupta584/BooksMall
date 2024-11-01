@@ -2,10 +2,9 @@
 import { useEffect, useState } from "react";
 import SellBtn from "./Sellbtn/SellBtn";
 import { usePathname, useRouter } from "next/navigation";
-import {  getUser, verifyLogin } from "../appwrite/api";
+import {  getCurrUser, logOut, verifyLogin } from "../appwrite/api";
 import Link from "next/link";
 import { getAllBooks } from "../appwrite/api"; // Ensure this is imported
-import { auth } from "@/auth";
 
 function Nav() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -18,9 +17,13 @@ function Nav() {
 
     useEffect(() => {
         (async()=>{
-            const session = await getUser()
-            console.log('session:',session);
-            
+          const res = await getCurrUser();
+
+          if(res?.email){
+          setLoggedIn(true);
+          setUser(res);
+        }
+
         })()
     }, [router]);
 
@@ -183,12 +186,10 @@ function Nav() {
                                     <li className="pt-1">
                                         <button
                                             className="border-0 outline-0 hover:bg-[gray] hover:text-[white] py-0 px-2"
-                                            // onClick={async () => {
-                                            //     await account.deleteSessions();
-                                            //     window.location.reload();
-                                            // }}
+                                            onClick={async () => {
+                                                await logOut();
+                                            }}
                                         >
-                                            {" "}
                                             Log out
                                         </button>
                                     </li>

@@ -17,7 +17,9 @@ function ShowCards() {
 
         (async () => {
             console.log('occured4')
-            const allBooks = await getAllBooks()
+            const allBooks = await getAllBooks();
+            console.log('allbooks:',allBooks);
+            
             setBooks(allBooks)
             const res = await axios.get("https://pixabay.com/api/?key=28620166-8e945f735596b182a40ab2809&q=book&image_type=photo&pretty=true")
             setImgUrls(res.data.hits.slice(0, 40))

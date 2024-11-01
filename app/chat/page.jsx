@@ -1,29 +1,32 @@
 'use client';
-import { getChat } from '@/app/appwrite/api';
+import { getChat, getCurrUser } from '@/app/appwrite/api';
 import Chat from '@/app/components/Chat'
-import Protect from '@/app/components/Protect'
 import { useLayoutEffect, useState } from 'react';
+import { useSocket } from '../context/socketContext';
 
-const Page = ({ searchParams, currentUser }) => {
+const Page = ({ searchParams }) => {
   
   const [chat, setChat] = useState(false);
-  const [isLoading, setisLoading] = useState(true)
+  const [isLoading, setisLoading] = useState(true);
   const chatId = searchParams?.chatId;
   const sellerId = searchParams?.sellerId;
-
+  const { currUser } = useSocket();
   useLayoutEffect(() => {
     (async () => {
       if (searchParams.chatId) {
-
-        const newChat = await getChat(chatId, sellerId, currentUser);
+        console.log('initilChat:',true);
+        console.log('chatId',chatId);
+        
+        const newChat = await getChat(chatId, sellerId , currUser._id);        
         setChat(newChat);
-        setisLoading(false)
+        setisLoading(false);
       } else {
+        console.log('initilChat:',false);
         setisLoading(false)
       }
     })()
 
-  }, [chatId, sellerId, currentUser]);
+  }, [chatId, sellerId]);
 
   if (isLoading) {
     return <div className="isLoading universal isLoading-spinner h-[91vh] w-[100vw] "></div>;
@@ -32,10 +35,9 @@ const Page = ({ searchParams, currentUser }) => {
   if (!isLoading) {
 
     return (
-
-      <Chat currentUser={currentUser} initialChat={chat} />
+      <Chat initialChat={chat} />
     )
   }
 }
 
-export default Protect(Page);
+export default Page;

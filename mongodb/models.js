@@ -12,6 +12,10 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+    },
+    chats:{
+        type:[mongoose.Types.ObjectId],
+        ref:'chats',
     }
 })
 
@@ -57,29 +61,29 @@ const BooksSchema = new mongoose.Schema({
         required: true,
     },
     ownerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users',
+        type: mongoose.Types.ObjectId,
+        ref: 'users',
         required: true,
     },
 })
 
 const ChatSchema = new mongoose.Schema({
     participants: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Users',
+        type: [mongoose.Types.ObjectId],
+        ref: 'users',
         required: true,
     }
 })
 
 const MessageSchema = new mongoose.Schema({
     senderId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users',
+        type: mongoose.Types.ObjectId,
+        ref: 'users',
         required: true,
     },
     receiverId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users',
+        type: mongoose.Types.ObjectId,
+        ref: 'users',
         required: true,
     },
     content: {
@@ -87,8 +91,8 @@ const MessageSchema = new mongoose.Schema({
         required: true,
     },
     chatId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Chats',
+        type: mongoose.Types.ObjectId,
+        ref: 'chats',
         required: true,
     },
     status: {

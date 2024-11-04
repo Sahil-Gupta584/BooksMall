@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useSocket } from "./socketContext";
-import { updateMessageSeen, addChatToUser } from "../appwrite/api";
+import { updateMessageSeen, addChatToUser } from "../actions/api";
 
 const chatContext = createContext(null);
 export const useChat = () => useContext(chatContext);

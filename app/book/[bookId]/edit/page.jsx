@@ -3,26 +3,23 @@ import { useState, useRef, useEffect } from "react";
 import addPhoto from "@/public/addphoto.png";
 import { useRouter } from "next/navigation";
 import { CurrentLocation, CustomLocation } from "@/app/components/Location";
-import { getBook, getCurrUser, updateBook } from "@/app/appwrite/api.js";
+import { getBook, getCurrUser, updateBook } from "@/app/actions/api.js";
+import { useSocket } from "@/app/context/socketContext";
 
-const Page = ({ params, currentUser }) => {
+const Page = ({ params }) => {
   const [coverImageIndex, setCoverImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [isOwner, setIsOwner] = useState(true)
   const [bookData, setBookData] = useState(null);
-  const [currUser, setcurrUser] = useState(null)
+  const { currUser } = useSocket();
 
   const router = useRouter();
 
   const formRef = useRef(null);
 
   useEffect(() => {
-    console.log(params)
-    const { bookId } = params;
 
     (async () => {
-      const user =await getCurrUser()
-      setcurrUser(user)
       const book = await getBook(params.bookId);
       setBookData(book);
 
@@ -50,12 +47,12 @@ const Page = ({ params, currentUser }) => {
 
       setImages([...book.bookImages]);
       setCoverImageIndex(book.coverImageIndex);
-      console.log('done')
-      console.log('bookData:', bookData)
-      console.log('images:', images)
+      // console.log('done')
+      // console.log('bookData:', bookData)
+      // console.log('images:', images)
 
 
-      console.log(images)
+      // console.log(images)
     })()
   }, [params.bookId])
 

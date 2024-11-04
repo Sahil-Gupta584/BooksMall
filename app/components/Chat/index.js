@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useSocket } from "@/app/context/socketContext";
-import { getPreviousMessages, uploadMessage, updateMessageSeen, addChatToUser } from "@/app/appwrite/api";
+import { getPreviousMessages, uploadMessage, updateMessageSeen, addChatToUser } from "@/app/actions/api";
 import Partner from "./Partner";
 import { getTimeElapsed } from "@/app/resource";
 import { useChat } from "@/app/context/chatContext";

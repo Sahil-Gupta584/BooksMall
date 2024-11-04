@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import addPhoto from "../../public/addphoto.png";
-import { getCurrUser, saveToDb } from "../appwrite/api.js";
+import { getCurrUser, saveToDb } from "../actions/api.js";
 import { useRouter } from "next/navigation";
 import { CurrentLocation, CustomLocation } from "../components/Location";
 
@@ -158,7 +158,7 @@ const Sell = () => {
             className="block text-gray-700 text-sm font-bold mb-2"
             htmlFor="price"
           >
-            Price ($):
+            Price :
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight form-input focus:shadow-outline"

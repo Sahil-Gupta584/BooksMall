@@ -1,7 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Wet+Paint&family=SUSE:wght@100..800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+html{
+  /* font-family: "SUSE", sans-serif; */
+  font-family: "Rubik Wet Paint", system-ui;
 
+}
 .loading.universal{
   mask-size: 3rem;
 }

@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from "react";
 import { io as ClientIO } from "socket.io-client";
-import { getCurrUser } from "../appwrite/api";
+import { getCurrUser } from "../actions/api";
 
 const SocketContext = createContext({
   socket: null,
@@ -27,9 +27,9 @@ export const SocketProvider = ({ children }) => {
 
     socketInstance.on("connect", async () => {
       
+      setIsConnected(true);
       const user = await getCurrUser();
       setCurrUser(user)
-      setIsConnected(true);
 
       if (typeof window !== 'undefined') {
         if (user) {

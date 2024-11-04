@@ -1,11 +1,11 @@
 'use server';
 import { auth, signIn, signOut } from "@/auth";
 import cloudinary from './cloudinary';
-import { Books, Users, Chats, Messages } from "@/mongodb/models";
+import { Books, Users, Chats, Messages, Feedbacks } from "@/mongodb/models";
 import { dbConnect } from "@/mongodb";
 
 export async function handleMagicLink(formdata) {
-  await signIn('nodemailer',formdata)
+  await signIn('nodemailer', formdata)
 }
 
 export async function handleGoogleAuth() {
@@ -33,6 +33,52 @@ export async function getUser(userId) {
   } catch (error) {
     console.log(error, 'from getUser');
     throw error
+  }
+}
+
+export async function submitFeedback(data) {
+  try {
+    await dbConnect();
+
+    const res = await Feedbacks.create({
+      title: data.title,
+      description: data.description,
+    });
+    return JSON.parse(JSON.stringify(res))
+  } catch (error) {
+    console.log(error, 'err from submitFeedback');
+    throw error
+  }
+}
+
+export async function toggleUpvote(feedbackId,email) {
+  try {
+    await dbConnect()
+    
+    let feedback = await Feedbacks.findById(feedbackId);
+
+    console.log('feedback',feedback);
+    
+    if (feedback.upVotedBy.includes(email)) {
+      feedback.upVotedBy = feedback.upVotedBy.filter(e => e !== email);
+  } else {
+      feedback.upVotedBy.push(email);
+  }
+  await feedback.save();
+  } catch (error) {
+    console.log(error, 'err from submitFeedback');
+    throw error
+  }
+}
+
+export async function getFeedbacks() {
+  try {
+    
+    const res = await Feedbacks.find()
+    return JSON.parse(JSON.stringify(res));
+  } catch (error) {
+   console.log(error,'err in getFeedbacks');
+    
   }
 }
 
@@ -133,7 +179,7 @@ export async function updateBook(bookId, formdata) {
 export async function getBook(bookId) {
   try {
     console.log('getbook just for you!');
-    
+
     await dbConnect();
     const book = await Books.findById(bookId);
     return JSON.parse(JSON.stringify(book));
@@ -166,17 +212,6 @@ export async function deleteUserBook(bookId) {
   }
 }
 
-// export async function getChatPartners(currentUserId) {
-//   try {
-//     await dbConnect();
-//     const user = await Users.findById(currentUserId).populate('chatPartners');
-//     const partners = user.chatPartners.map(async (partner) => await getUser(partner._id));
-//     return Promise.all(partners);
-//   } catch (error) {
-//     console.log(error, 'from getChatPartners');
-//   }
-// }
-
 export async function getChat(chatId, sellerId, currentUserId) {
   try {
     await dbConnect();
@@ -185,14 +220,14 @@ export async function getChat(chatId, sellerId, currentUserId) {
 
     if (!chat) {
       console.log('creating new chat!');
-      
-      let newChat = await Chats.create({_id:chatId , participants: [currentUserId, sellerId] });
+
+      let newChat = await Chats.create({ _id: chatId, participants: [currentUserId, sellerId] });
       newChat = await newChat.populate('participants')
       console.log('newChat', newChat);
 
       return JSON.parse(JSON.stringify(newChat));
     }
-    
+
     return JSON.parse(JSON.stringify(chat));
   } catch (error) {
     console.log(error, 'from getChat');
@@ -203,11 +238,9 @@ export async function getCurrUser() {
   try {
     await dbConnect();
     const session = await auth();
-console.log('session',session);
 
     if (session) {
-      const user = await Users.findOne({ email: session.user.email }).populate({path:'chats', populate: {path:'participants'}})
-      console.log('user:', user);
+      const user = await Users.findOne({ email: session.user.email }).populate({ path: 'chats', populate: { path: 'participants' } })
       const parsed = JSON.parse(JSON.stringify(user))
       return parsed;
     } else {
@@ -263,12 +296,12 @@ export async function updateMessageSeen(chatId) {
 export async function addChatToUser(currentUserId, chatId) {
   try {
     console.log('Adding new chat to user');
-    
+
     await dbConnect();
     let user = await Users.findById(currentUserId);
-    console.log('user.chats from addChat',user.chats);
-    console.log('!user.chats.includes(chatId):',user.chats.includes(chatId));
-    
+    console.log('user.chats from addChat', user.chats);
+    console.log('!user.chats.includes(chatId):', user.chats.includes(chatId));
+
     if (!user.chats.includes(chatId)) {
       user.chats.push([chatId]);
       await user.save();

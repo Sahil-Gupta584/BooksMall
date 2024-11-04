@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import next from 'next';
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -14,7 +15,7 @@ const UserSchema = new mongoose.Schema({
         required: true,
     },
     chats:{
-        type:[mongoose.Types.ObjectId],
+        type:[mongoose.Schema.Types.ObjectId],
         ref:'chats',
     }
 })
@@ -61,7 +62,7 @@ const BooksSchema = new mongoose.Schema({
         required: true,
     },
     ownerId: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
         required: true,
     },
@@ -69,7 +70,7 @@ const BooksSchema = new mongoose.Schema({
 
 const ChatSchema = new mongoose.Schema({
     participants: {
-        type: [mongoose.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'users',
         required: true,
     }
@@ -77,12 +78,12 @@ const ChatSchema = new mongoose.Schema({
 
 const MessageSchema = new mongoose.Schema({
     senderId: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
         required: true,
     },
     receiverId: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
         required: true,
     },
@@ -91,7 +92,7 @@ const MessageSchema = new mongoose.Schema({
         required: true,
     },
     chatId: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'chats',
         required: true,
     },
@@ -105,10 +106,27 @@ const MessageSchema = new mongoose.Schema({
     },
 })
 
+const FeedbackSchema = new mongoose.Schema({
+    title:{
+        type:String,
+        required:true,
+        unique:[true,'title already exists.'],
+    },
+    description:{
+        type:String,
+        required:true
+    },
+    upVotedBy:{
+        type:[String],
+    }
+})
+
+
 const Chats = mongoose.models?.chats || mongoose.model('chats', ChatSchema)
 const Messages = mongoose.models?.messages || mongoose.model('messages', MessageSchema)
 const Users = mongoose.models?.users || mongoose.model('users', UserSchema)
 const Books = mongoose.models?.books || mongoose.model('books', BooksSchema)
+const Feedbacks = mongoose.models?.feedbacks || mongoose.model('feedbacks', FeedbackSchema)
 
-export { Chats, Messages, Users, Books };
+export { Chats, Messages, Users, Books,Feedbacks };
 

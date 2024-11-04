@@ -1,44 +1,22 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styles from './Auth.module.css';
-import { handleGoogleAuth, handleMagicLink } from '../appwrite/api';
-import { useRouter } from 'next/navigation';
+import { handleGoogleAuth, handleMagicLink } from '../actions/api';
 
-function Authenticate({ params }) {
+function Authenticate() {
 
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [showPass, setShowPass] = useState(false);
-    const [password, setPassword] = useState('');
-
-    const router = useRouter();
-    useEffect(() => {
-
-        // async function fetch(params) {
-        //     const user = await verifyLogin();
-        //     if (user) {
-        //         console.log('redirecting fro login');
-        //         router.push('/')
-        //     }
-        // }
-        // fetch()
-
-    }, [params, router])
-
-
 
     async function handleSubmit(event) {
-        event.preventDefault(); // Prevent form submission from refreshing the page
+        event.preventDefault(); 
         setError('')
         const formData = new FormData(event.target);
-        const email = formData.get("email");
         try {
 
-            await handleMagicLink({ email })
+            await handleMagicLink(formData)
         } catch (error) {
             console.log(error, 'err in HandleMagicLink');
             setError(error.message)
-
         }
     }
 
@@ -51,16 +29,14 @@ function Authenticate({ params }) {
                     <div className={styles.form_details}>Login</div>
                     <form className='flex flex-col gap-5' onSubmit={handleSubmit} >
                         <input type="email" name="email" className={styles.input} placeholder="example@gmail.com" required />
-                        <button type="submit" className={styles.btn} disabled={loading}> {loading ? <div className="loading loading-spinner"></div> : 'SignIn'} </button>
+                        <button type="submit" className={styles.btn}>SignIn</button>
                         <div className='flex items-center gap-2'>
                             <div className='flex-grow bg-[#d971f0] h-[1px]'></div>
                             <span>or</span>
                             <div className='flex-grow bg-[#d971f0] h-[1px]'></div>
                         </div>
-
-
                     </form>
-                    <button onClick={async ()=> handleGoogleAuth()} className={styles.btn} disabled={loading}>
+                    <button onClick={async ()=> handleGoogleAuth()} className={styles.btn}>
                         <img src="https://img.clerk.com/static/google.svg?width=160" />
                         <span>Google</span>
                     </button>

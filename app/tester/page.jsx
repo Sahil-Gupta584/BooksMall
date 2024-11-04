@@ -1,5 +1,5 @@
 'use client';
-import { handleMagicLink } from "../appwrite/api";
+import { handleMagicLink } from "../actions/api";
 
 export default function SignIn() {
     

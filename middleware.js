@@ -5,6 +5,7 @@ const { auth } = NextAuth(authConfig);
 const protectedRoutes = [
     '/sell',
     '/myselling',
+    '/feedback',
 ]
 
 export default auth((req) => {

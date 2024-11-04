@@ -1,16 +1,16 @@
 'use client';
-import { getChat, getCurrUser } from '@/app/appwrite/api';
+import { getChat } from '@/app/actions/api';
 import Chat from '@/app/components/Chat'
 import { useLayoutEffect, useState } from 'react';
 import { useSocket } from '../context/socketContext';
 
 const Page = ({ searchParams }) => {
-  
   const [chat, setChat] = useState(false);
   const [isLoading, setisLoading] = useState(true);
   const chatId = searchParams?.chatId;
   const sellerId = searchParams?.sellerId;
   const { currUser } = useSocket();
+  
   useLayoutEffect(() => {
     (async () => {
       if (searchParams.chatId) {

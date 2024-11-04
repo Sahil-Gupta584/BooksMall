@@ -20,8 +20,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 port: 465,
                 secure: true, // use SSL for port 465
                 auth: {
-                    user: 'guptas3067@gmail.com',
-                    pass: 'gwfcskamejdavdbd'
+                    user: process.env.Nodemailer_USER,
+                    pass: process.env.Nodemailer_PASS
                 },
             },
             from: 'guptas3067@gmail.com',
@@ -58,7 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             data: {
                                 name,
                                 email,
-                                googleId: id,
+                                avatarUrl:image,
                             }
                         });
                         console.log('newUser:', newUser);
@@ -71,14 +71,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
             }
 
-            if (account.provider === 'credentials') {
-                console.log('user from account', account)
-                console.log('user from credentials', user)
-                return true
-            }
             if (account.provider === 'nodemailer') {
-                console.log('user from account', account)
-                console.log('user from resend', user)
+                console.log('user from account nodemailer', account)
+                console.log('user from nodemailer', user)
                 return true
             }
         },

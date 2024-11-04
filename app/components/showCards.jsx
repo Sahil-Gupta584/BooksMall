@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Card from "./Card";
 import axios from "axios";
-import { getAllBooks } from "../appwrite/api";
+import { getAllBooks } from "../actions/api";
 
 function ShowCards() {
     const [imgUrls, setImgUrls] = useState([]);

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getBook, getCurrUser, getUser } from '@/app/appwrite/api';
+import { getBook, getUser } from '@/app/actions/api';
 import Carousel from '@/app/components/Carousel/Carousel';
 import conditionIcon from '@/public/categories-img/conditionIco.webp';
 import categoryIcon from '@/public/categoryIcon.png';
@@ -13,16 +13,10 @@ function Page({ params }) {
     useEffect(() => {
 
         (async () => {
-            
-            console.log('currUser:',currUser);
-            console.log('isConnected',isConnected);
             const book = await getBook(params.bookId);
             const owner = await getUser(book.ownerId)
             setBookData({ ...book, seller: { ...owner } });
             console.log('book;', book);
-
-
-
         })()
 
     }, [params.bookId]);
@@ -103,16 +97,16 @@ function Page({ params }) {
                         </div>
                     </div>
                     <div className="md:col-span-1">
-                        <div className="bg-white p-6 rounded-lg shadow-md">
+                        <div className="bg-white p-6 rounded-lg shadow-md w-fit">
                             <h2 className="text-3xl font-bold mb-4">Seller</h2>
-                            <div className="flex justify-start mb-4 items-center gap-2">
+                            <div className="flex justify-start mb-4 items-center gap-2 ">
                                 <div className="avatar">
                                     <div className="w-16 h-16 rounded-full">
-                                        <img src={bookData.seller?.avatarUrl} />
+                                        <img src={`https://api.multiavatar.com/${bookData.seller.email}.svg`} />
                                     </div>
                                 </div>
-                                <h2 className="text-3xl font-bold ">
-                                    {bookData.seller?.name}
+                                <h2 className="font-bold ">
+                                    {bookData.seller.name? bookData.seller.name : bookData.seller.email}
                                 </h2>
                             </div>
 

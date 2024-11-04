@@ -25,8 +25,9 @@ export const SocketProvider = ({ children }) => {
       path: "/api/socket/io",
     });
 
+    console.log('connecting to socket!');
     socketInstance.on("connect", async () => {
-      
+      console.log('connected to socket!');
       setIsConnected(true);
       const user = await getCurrUser();
       setCurrUser(user)

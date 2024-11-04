@@ -54,7 +54,7 @@ export default function Home() {
       {showScroll && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-5 right-5 p-2 bg-[#d97f02] text-white rounded-full"
+          className="fixed bottom-5 right-5 p-[8px_13px] text-[36px] bg-[#d97f02] text-white rounded-full hover:shadow-xl transition"
         >
           ↑
         </button>

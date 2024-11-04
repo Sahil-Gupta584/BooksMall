@@ -1,6 +1,6 @@
 'use client';
-import React, { useEffect, useState } from 'react'
-import { getUser, verifyLogin } from '../appwrite/api';
+import  { useEffect, useState } from 'react'
+import { getUser, verifyLogin } from '../actions/api';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 

@@ -9,12 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
-      "appwrite": "^15.0.0",
+    "@auth/mongodb-adapter": "^3.7.2",
+    "appwrite": "^15.0.0",
     "axios": "^1.7.2",
+    "cloudinary": "^2.5.1",
+    "mongodb": "^6.10.0",
+    "mongoose": "^8.7.2",
     "next": "14.2.5",
+    "next-auth": "^5.0.0-beta.23",
+    "nodemailer": "^6.9.16",
     "react": "^18",
     "react-dom": "^18",
-    "react-password-strength-bar": "^0.4.1",
+    "react-hook-form": "^7.53.1",
     "react-select": "^5.8.0",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5"

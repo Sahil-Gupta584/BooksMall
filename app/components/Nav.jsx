@@ -2,30 +2,18 @@
 import { useEffect, useState } from "react";
 import SellBtn from "./Sellbtn/SellBtn";
 import { usePathname, useRouter } from "next/navigation";
-import { account, getUser, verifyLogin } from "../appwrite/api";
+import {  getCurrUser, logOut, verifyLogin } from "../actions/api";
 import Link from "next/link";
-import { getAllBooks } from "../appwrite/api"; // Ensure this is imported
+import { getAllBooks } from "../actions/api"; // Ensure this is imported
+import { useSocket } from "../context/socketContext";
 
 function Nav() {
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [user, setUser] = useState(null);
     const [books, setBooks] = useState([]); // To store all books
     const [searchQuery, setSearchQuery] = useState(""); // To store search input
     const [filteredBooks, setFilteredBooks] = useState([]); // To store filtered books
     const pathname = usePathname();
-    const router = useRouter();
+    const {currUser}= useSocket();
 
-    useEffect(() => {
-        async function fetch() {
-            const res = await verifyLogin();
-            if (res) {
-                setLoggedIn(true);
-                const user = await getUser(res.$id);
-                setUser(user);
-            }
-        }
-        fetch();
-    }, [router]);
 
     useEffect(() => {
         async function fetchBooks() {
@@ -60,44 +48,44 @@ function Nav() {
     return (
         <nav className={`navbar ${pathname == "/auth" ? "hidden" : ""} bg-[#d97f02] shadow-[0_3px_6px_0_rgba(50,50,50,0.3)] `}>
             <div className="flex items-center w-full relative">
-    <Link className="btn btn-ghost text-xl" href="/">
-        BooksMall
-    </Link>
-    <div className="relative w-[62%] ml-[13px]">
-        <input
-            type="text"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-            className="search input input-bordered w-full bg-[wheat] border-0 h-[2.7rem] pl-4"
-        />
-        <div className={`dropdown-content absolute bg-white shadow mt-2 p-2 w-full z-50 ${filteredBooks.length > 0 || searchQuery ? "block" : "hidden"}`}>
-            {filteredBooks.length > 0 ? (
-                <ul>
-                    {filteredBooks.map((book, i) => (
-                        <li key={i} className="p-2 border-b border-gray-200">
-                            <Link href={`/book/${book.$id}`}>
-                                <div>
-                                    <p className="font-bold">{book.title}</p>
-                                    <p className="text-sm text-gray-600">
-                                        {book.category}, {book.state} - {book.city}
-                                    </p>
-                                </div>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            ) : searchQuery && (
-                <p className="p-2 text-gray-500">No results found</p>
-            )}
-        </div>
-    </div>
-</div>
+                <Link className="btn btn-ghost text-xl" href="/">
+                    BooksMall
+                </Link>
+                <div className="relative w-[62%] ml-[13px]">
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)} // Update search query
+                        className="search input input-bordered w-full bg-[wheat] border-0 h-[2.7rem] pl-4"
+                    />
+                    <div className={`dropdown-content absolute bg-white shadow mt-2 p-2 w-full z-50 ${filteredBooks.length > 0 || searchQuery ? "block" : "hidden"}`}>
+                        {filteredBooks.length > 0 ? (
+                            <ul>
+                                {filteredBooks.map((book, i) => (
+                                    <li key={i} className="p-2 border-b border-gray-200">
+                                        <Link href={`/book/${book.$id}`}>
+                                            <div>
+                                                <p className="font-bold">{book.title}</p>
+                                                <p className="text-sm text-gray-600">
+                                                    {book.category}, {book.state} - {book.city}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : searchQuery && (
+                            <p className="p-2 text-gray-500">No results found</p>
+                        )}
+                    </div>
+                </div>
+            </div>
 
             <div className="flex-none gap-2">
                 <div className={`${shouldHideSellBtn ? "hidden" : ""}`} >
 
-                <SellBtn />
+                    <SellBtn />
                 </div>
 
                 <div className="dropdown dropdown-end m-2" >
@@ -146,7 +134,7 @@ function Nav() {
                         tabIndex={0}
                         className="menu menu-sm dropdown-content rounded-md shadow-[rgba(0,0,0,0.25)_0px_54px_55px,rgba(0,0,0,0.12)_0px_-12px_30px,rgba(0,0,0,0.12)_0px_4px_6px,rgba(0,0,0,0.17)_0px_12px_13px,rgba(0,0,0,0.09)_0px_-3px_5px] z-[1] mt-3 w-fit p-2 bg-[wheat]"
                     >
-                        {!loggedIn ?
+                        {!currUser ?
                             (
                                 <li className="px-2 hover:text-[grey] hover:cursor-pointer">
                                     <Link
@@ -163,23 +151,28 @@ function Nav() {
                                     <div className="flex gap-2 mb-4">
                                         <div className="avatar">
                                             <div className="w-12 rounded-full">
-                                                <img src={user?.avatarUrl} />
+                                                <img src={`https://api.multiavatar.com/${currUser.email}.svg`} />
                                             </div>
                                         </div>
-                                        <div>
-                                            <h2 className="font-bold">{user?.name}</h2>
-                                            <span className="text-sm text-[rgba(0,47,52,0.64)]">{user?.email}</span>
+                                        <div className="flex flex-col justify-center">
+                                            <h2 className="font-bold ">{currUser?.name}</h2>
+                                            <p className="font-semibold  text-sm text-[rgba(0,47,52,0.64)]">{currUser?.email}</p>
 
                                         </div>
                                     </div>
                                     <li className=" hover:text-[grey] hover:cursor-pointer">
-                                        <Link href='/myselling' prefetch className="p-2">
+                                        <Link href='/myselling' prefetch >
                                             My sellings
                                         </Link>
                                     </li>
                                     <li className=" hover:text-[grey] hover:cursor-pointer">
-                                        <Link href='/chat' prefetch className="p-2">
+                                        <Link href='/chat' prefetch >
                                             My Chats
+                                        </Link>
+                                    </li>
+                                    <li className=" hover:text-[grey] hover:cursor-pointer">
+                                        <Link href='/feedback' prefetch >
+                                            Give us Feedback 🤗
                                         </Link>
                                     </li>
                                     <hr className="bg-[black] border-black mt-2" />
@@ -187,11 +180,9 @@ function Nav() {
                                         <button
                                             className="border-0 outline-0 hover:bg-[gray] hover:text-[white] py-0 px-2"
                                             onClick={async () => {
-                                                await account.deleteSessions();
-                                                window.location.reload();
+                                                await logOut();
                                             }}
                                         >
-                                            {" "}
                                             Log out
                                         </button>
                                     </li>

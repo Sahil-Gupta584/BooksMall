@@ -1,4 +1,3 @@
-// /auth/page.jsx
 import Authenticate from './Authenticate';
 
 async function Page() {

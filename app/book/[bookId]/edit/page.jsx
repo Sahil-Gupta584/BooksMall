@@ -3,31 +3,33 @@ import { useState, useRef, useEffect } from "react";
 import addPhoto from "@/public/addphoto.png";
 import { useRouter } from "next/navigation";
 import { CurrentLocation, CustomLocation } from "@/app/components/Location";
-import Protect from "@/app/components/Protect";
-import { getBook, getUser, updateBook } from "@/app/appwrite/api.js";
+import { getBook, getCurrUser, updateBook } from "@/app/actions/api.js";
+import { useSocket } from "@/app/context/socketContext";
 
-const Page = ({ params, currentUser }) => {
+const Page = ({ params }) => {
   const [coverImageIndex, setCoverImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [isOwner, setIsOwner] = useState(true)
   const [bookData, setBookData] = useState(null);
-  const [seller, setSeller] = useState(null)
+  const { currUser } = useSocket();
+
   const router = useRouter();
 
   const formRef = useRef(null);
 
   useEffect(() => {
-    console.log(params)
-    const { bookId } = params;
 
     (async () => {
-
       const book = await getBook(params.bookId);
       setBookData(book);
-      const user = await getUser(book.ownerId)
-      setSeller(user)
 
-      if (book.ownerId !== currentUser.$id) {
+      console.log({
+        ownerId: book.ownerId,
+        currentUserId: user._id,
+        isOwner: book.ownerId === user._id
+      });
+      
+      if (book.ownerId !== user._id) {
         setIsOwner(false)
       }
 
@@ -42,15 +44,15 @@ const Page = ({ params, currentUser }) => {
         state: book.state || '',
         city: book.city || ''
       });
-      // setBookData(book)
+
       setImages([...book.bookImages]);
       setCoverImageIndex(book.coverImageIndex);
-      console.log('done')
-      console.log('bookData:', bookData)
-      console.log('images:', images)
+      // console.log('done')
+      // console.log('bookData:', bookData)
+      // console.log('images:', images)
 
 
-      console.log(images)
+      // console.log(images)
     })()
   }, [params.bookId])
 
@@ -78,8 +80,18 @@ const Page = ({ params, currentUser }) => {
     if (formRef.current.checkValidity() && images.length > 0) {
       try {
         console.log("started");
-        // const res = await saveToDb(bookData, coverImageIndex, images);
-        const res = await updateBook(params.bookId, bookData, coverImageIndex, images);
+
+        const formData = new FormData();
+        formData.append("bookData", JSON.stringify(bookData));
+        formData.append("coverImageIndex", coverImageIndex);
+        formData.append("location", JSON.stringify(location));
+        formData.append("ownerId", currUser._id);
+
+        // Add all images to formData
+        images.forEach((image, index) => {
+          formData.append(`images[${index}]`, image);
+        }); 
+        const res = await updateBook(params.bookId, formData);
         console.log(res);
         if (res) router.push("/");
       } catch (err) {
@@ -354,4 +366,4 @@ const Page = ({ params, currentUser }) => {
   }
 };
 
-export default Protect(Page);
+export default Page;

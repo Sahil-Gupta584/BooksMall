@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useSocket } from "@/app/context/socketContext";
-import { getPreviousMessages, getUser, getChat, uploadMessage, updateMessageSeen } from "@/app/appwrite/api";
+import { getPreviousMessages, uploadMessage, updateMessageSeen, addChatToUser } from "@/app/actions/api";
 import Partner from "./Partner";
 import { getTimeElapsed } from "@/app/resource";
 import { useChat } from "@/app/context/chatContext";
 
-export default function Chat({ currentUser, initialChat }) {
+export default function Chat({ initialChat }) {
     const currentChatRef = useRef(null); // Use ref for currentChat
     const [isTyping, setIsTyping] = useState(false)
     const { setChats, chats, currentChat, setCurrentChat, messages, setMessages } = useChat();
-    const { socket, onlineUsers } = useSocket();
+    const { socket, onlineUsers,currUser } = useSocket();
 
     const TYPING_TIMER_LENGTH = 800; // 500ms
     let typingTimer;
@@ -18,18 +18,26 @@ export default function Chat({ currentUser, initialChat }) {
 
     useEffect(() => {
         (async () => {
+            console.log('currUser',currUser);
+            
+            console.log('chats:', chats);
 
-            console.log("chats:", chats);
             if (initialChat) {
                 console.log('initialChat:', initialChat)
-                setChats(prevChats => [initialChat, ...prevChats]);
-                setCurrentChat(initialChat);
-                const res = await getPreviousMessages(initialChat.$id);
-                setMessages(res);
-            }
-            
-        })()
 
+                setChats((prevChats) => {
+                    if (!prevChats.includes(initialChat)) 
+                        return [initialChat, ...prevChats]
+                    
+                    return [...prevChats]
+                })
+
+                setCurrentChat(initialChat);
+                const res = await getPreviousMessages(initialChat._id);
+                setMessages(res);
+                await addChatToUser(currUser._id,initialChat._id)
+            }
+        })()
     }, [])
 
     useLayoutEffect(() => {
@@ -47,26 +55,26 @@ export default function Chat({ currentUser, initialChat }) {
         console.log('resetting unread')
         setChats(prevChats =>
             prevChats.map(chat =>
-                chat.$id === currentChat?.$id ? { ...chat, unread: 0 } : chat
+                chat._id === currentChat?._id ? { ...chat, unread: 0 } : chat
             )
         );
     }, [currentChat]);
 
 
 
-
+useEffect(()=> console.log('chats from effect:',chats),[chats])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const content = e.target.elements.message.value;
         if (!content.trim()) return;
-        const receiver = currentChat.participants.find((p) => p.$id !== currentUser.$id);
+        const receiver = currentChatRef.current.participants.find((p) => p._id !== currUser._id);
 
         const newMessage = {
-            senderId: currentUser.$id,
-            receiverId: receiver.$id,
+            senderId: currUser._id,
+            receiverId: receiver._id,
             content,
-            chatId: currentChat.$id,
+            chatId: currentChatRef.current._id,
             status: "sent",
             timestamp: Date.now().toString(),
         };
@@ -82,7 +90,7 @@ export default function Chat({ currentUser, initialChat }) {
 
     function handleChange(params) {
 
-        const partnerId = currentChat.participants.find((p) => p.$id !== currentUser.$id).$id
+        const partnerId = currentChatRef.current.participants.find((p) => p._id !== currUser._id)._id
         console.log('partnerId:', partnerId)
 
         if (!isTyping) {
@@ -102,22 +110,23 @@ export default function Chat({ currentUser, initialChat }) {
     }
 
     const handlePartnerClick = async (chat) => {
-
+        console.log('updating currentChat!');
+        
         setCurrentChat(chat);
 
-        const previousMessages = await getPreviousMessages(chat.$id);
+        const previousMessages = await getPreviousMessages(chat._id);
         setMessages(previousMessages);
         console.log('previousMessages:', previousMessages)
 
-        const partnerId = currentChatRef.current.participants.find((p) => p.$id !== currentUser.$id).$id
-        if (onlineUsers.includes(partnerId)) {
+        const partnerId = chat.participants.find((p) => p._id !== currUser._id)._id
 
+        if (onlineUsers.includes(partnerId)) {
             console.log('updating seen for online partner', partnerId)
-            socket.emit("SEEN_MESSAGE", { chatId: currentChatRef.current.$id, partnerId: partnerId });
+            socket.emit("SEEN_MESSAGE", { chatId: currentChatRef.current._id, partnerId: partnerId });
             console.log('seen message event emitted');
         } else {
             console.log('updating seen for offline partner')
-            await updateMessageSeen(chat.$id);
+            await updateMessageSeen(chat._id);
         }
 
 
@@ -125,17 +134,23 @@ export default function Chat({ currentUser, initialChat }) {
 
     return (
         <div className="flex h-[91vh] bg-[#f3eaea]">
-            <div className={`md:block ${currentChat?'hidden':'w-full'} w-1/4 bg-[#f3eaea] border-r border-[#e0d5d5] overflow-y-auto"`}>
-                {chats.length > 0 ? chats.map((chat, i) => (
-                    <div
-                        className={`p-4 flex ${currentChat?.$id === chat?.$id ? "bg-[#e0d5d5]" : ""
-                            } items-center gap-2 border-b border-[#e0d5d5] hover:bg-[#e0d5d5] cursor-pointer`}
-                        onClick={() => handlePartnerClick(chat)}
-                        key={i}
-                    >
-                        <Partner chat={chat} currentUser={currentUser} info={true} />
-                    </div>
-                )):(
+            <div className={`md:block ${currentChat ? 'hidden' : 'w-full'} w-1/4 bg-[#f3eaea] border-r border-[#e0d5d5] overflow-y-auto"`}>
+                {chats?.length > 0 ? chats.map((chat, i) => {
+                    console.log('chats', chats);
+
+                    console.log('chat', i, chat);
+
+                    return (
+                        <div
+                            className={`p-4 flex ${currentChat?._id === chat?._id ? "bg-[#e0d5d5]" : ""
+                                } items-center gap-2 border-b border-[#e0d5d5] hover:bg-[#e0d5d5] cursor-pointer`}
+                            onClick={() => handlePartnerClick(chat)}
+                            key={i}
+                        >
+                            <Partner chat={chat} currentUserId={currUser._id} info={true} />
+                        </div>
+                    )
+                }) : (
                     <p className="font-bold text-xl">Oops, You don have any past converations</p>
                 )}
             </div>
@@ -143,25 +158,25 @@ export default function Chat({ currentUser, initialChat }) {
                 {currentChat ? (
                     <>
                         <div className="flex items-center font-bold gap-2 bg-[#f3eaea] p-2 border-b border-[#e0d5d5]">
-                            <Partner chat={currentChat} currentUser={currentUser} />
+                            <Partner chat={currentChat} currentUserId={currUser._id} />
                         </div>
                         <div className="message-box flex-grow bg-[#e4e4e4] overflow-y-auto py-4 px-1">
                             {messages.map((msg, index) => (
                                 <div
-                                    className={`mb-4 flex flex-col ${msg.senderId === currentUser.$id ? " items-end" : "items-start"}`}
+                                    className={`mb-4 flex flex-col ${msg.senderId === currUser._id ? " items-end" : "items-start"}`}
                                     id={msg.timestamp}
                                     key={index}
                                 >
                                     <span className="text-[9px] text-gray-500">{getTimeElapsed(msg.timestamp)}</span>
                                     <div
-                                        className={`w-fit p-4 ${msg.senderId === currentUser.$id
+                                        className={`w-fit p-4 ${msg.senderId === currUser._id
                                             ? "bg-[#d97f02] rounded-tl-3xl rounded-tr-2xl rounded-bl-3xl"
                                             : "bg-[#f3aa4b] rounded-tl-2xl rounded-tr-3xl rounded-br-3xl"
                                             } break-all`}
                                     >
                                         {msg.content}
                                     </div>
-                                    {msg.senderId === currentUser.$id && <span className="text-[13px]">{msg.status}</span>}
+                                    {msg.senderId === currUser._id && <span className="text-[13px]">{msg.status}</span>}
                                 </div>
                             ))}
                             <div ref={messagesEndRef} />

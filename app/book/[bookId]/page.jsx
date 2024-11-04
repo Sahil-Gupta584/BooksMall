@@ -1,29 +1,22 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getBook, getChat, getUser, verifyLogin } from '@/app/appwrite/api';
+import { getBook, getUser } from '@/app/actions/api';
 import Carousel from '@/app/components/Carousel/Carousel';
 import conditionIcon from '@/public/categories-img/conditionIco.webp';
 import categoryIcon from '@/public/categoryIcon.png';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ID } from 'appwrite';
-import Protect from '@/app/components/Protect';
+import { useSocket } from '@/app/context/socketContext';
 
- function Page({ params,currentUser }) {
+function Page({ params }) {
     const [bookData, setBookData] = useState(null);
-    const router = useRouter();
-
+    const { currUser,isConnected } = useSocket();
     useEffect(() => {
 
         (async () => {
-            
-                const book = await getBook(params.bookId);
-                const owner = await getUser(book.ownerId)
-                setBookData({...book, seller:{...owner}});
-                console.log('book;', book);
-
-                
-            
+            const book = await getBook(params.bookId);
+            const owner = await getUser(book.ownerId)
+            setBookData({ ...book, seller: { ...owner } });
+            console.log('book;', book);
         })()
 
     }, [params.bookId]);
@@ -36,7 +29,7 @@ import Protect from '@/app/components/Protect';
 
 
     if (bookData) {
-        console.log('bookData',bookData)
+        console.log('bookData', bookData)
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="mb-8 w-full">
@@ -86,16 +79,16 @@ import Protect from '@/app/components/Protect';
                     <div className="md:col-span-1">
                         <div className="bg-white p-6 rounded-lg shadow-md">
                             <h2 className="text-3xl font-bold mb-4">₹ {bookData.price}</h2>
-                            {currentUser.$id && currentUser.$id !== bookData.seller.$id ? (
+                            {currUser && currUser._id !== bookData.seller._id ? (
                                 <Link
-                                    href={`/chat?chatId=${[currentUser.$id.slice(currentUser.$id.length / 2), bookData.seller.$id.slice(bookData.seller.$id.length / 2)].sort().join('')}&sellerId=${bookData.seller.$id}`}
+                                    href={`/chat?chatId=${[currUser._id.slice(currUser._id.length / 2), bookData.seller._id.slice(bookData.seller._id.length / 2)].sort().join('')}&sellerId=${bookData.seller._id}`}
                                     className="w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded">
 
                                     Chat With Seller
                                 </Link>
                             ) : (
                                 <Link
-                                    href={`/book/${bookData.$id}/edit`}
+                                    href={`/book/${bookData._id}/edit`}
                                     className='w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded'
                                 >
                                     Edit
@@ -104,23 +97,23 @@ import Protect from '@/app/components/Protect';
                         </div>
                     </div>
                     <div className="md:col-span-1">
-                        <div className="bg-white p-6 rounded-lg shadow-md">
+                        <div className="bg-white p-6 rounded-lg shadow-md w-fit">
                             <h2 className="text-3xl font-bold mb-4">Seller</h2>
-                            <div className="flex justify-start mb-4 items-center gap-2">
+                            <div className="flex justify-start mb-4 items-center gap-2 ">
                                 <div className="avatar">
                                     <div className="w-16 h-16 rounded-full">
-                                        <img src={bookData.seller?.avatarUrl} />
+                                        <img src={`https://api.multiavatar.com/${bookData.seller.email}.svg`} />
                                     </div>
                                 </div>
-                                <h2 className="text-3xl font-bold ">
-                                    {bookData.seller?.name}
+                                <h2 className="font-bold ">
+                                    {bookData.seller.name? bookData.seller.name : bookData.seller.email}
                                 </h2>
                             </div>
 
-                            {currentUser.$id && currentUser.$id !== bookData.seller.$id && (
+                            {currUser._id && currUser._id !== bookData.seller._id && (
 
                                 <Link
-                                    href={`/chat/${[currentUser.$id, bookData.seller.$id].sort().join('')}&sellerId=${bookData.seller.$id}`}
+                                    href={`/chat/${[currUser._id, bookData.seller._id].sort().join('')}&sellerId=${bookData.seller._id}`}
                                     className="w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded"
                                 >
                                     Chat With Seller
@@ -137,4 +130,4 @@ import Protect from '@/app/components/Protect';
     }
 }
 
-export default Protect(Page)
+export default Page

@@ -1,33 +1,28 @@
 "use client";
 import { useEffect, useState } from "react";
-import { account, database, deleteUserBook, getUserBooks, verifyLogin } from "../appwrite/api";
+import { account, database, deleteUserBook, getCurrUser, getUserBooks, verifyLogin } from "../actions/api";
 import Link from "next/link";
 import { getTimeElapsed } from "../resource";
-import Protect from "../components/Protect";
 import { Query } from "appwrite";
 
-function Page({ currentUser }) {
+function Page() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currUser, setcurrUser] = useState(null)
 
   useEffect(() => {
 
     (async () => {
-      const res = await getUserBooks(currentUser.$id)
-      console.log('userBooks', res)
-      setBooks(res)
+      const user = await getCurrUser()
+      setcurrUser(user)
+
+      const books = await getUserBooks(user._id)
+      console.log('userBooks', books)
+      setBooks(books)
     })()
 
-  }, [currentUser.$id]);
-
-  async function deleteBook(book) {
-    console.log(book)
-    await deleteUserBook(currentUser.$id, book.$id);
-
-    setBooks((prev) => prev.filter((b) => b.$id !== book.$id));
-
-  }
+  }, []);
 
 
   return (
@@ -38,7 +33,7 @@ function Page({ currentUser }) {
         {books &&
           books.map((book, i) => (
             <div className="card bg-white m-[1rem] relative card-side shadow-xl h-[13rem] border-2 border-[orange]" key={i}>
-              <label htmlFor={`my_modal_7_${book.$id}`} className="absolute right-2">
+              <label htmlFor={`my_modal_7_${book._id}`} className="absolute right-2">
                 <svg
                   preserveAspectRatio="xMidYMin"
                   width="16"
@@ -56,28 +51,28 @@ function Page({ currentUser }) {
                 </svg>
               </label>
 
-              <input type="checkbox" id={`my_modal_7_${book.$id}`} className="modal-toggle" />
+              <input type="checkbox" id={`my_modal_7_${book._id}`} className="modal-toggle" />
               <div className="modal" role="dialog">
                 <div className="modal-box bg-[wheat] text-[black] mt-1">
                   <h2 className="text-center font-bold">Confirm</h2>
                   <p className="text-[14px]">Are you sure you want to remove this product from selling? You won't be able to undo this.</p>
                   <div className="py-4 flex justify-end gap-2">
                     <label
-                      htmlFor={`my_modal_7_${book.$id}`}
+                      htmlFor={`my_modal_7_${book._id}`}
                       className="btn py-0 px-2 h-[2rem] min-h-[2rem] hover:text-[gray]"
                     >
                       Cancel
                     </label>
                     <label
-                      htmlFor={`my_modal_7_${book.$id}`}
+                      htmlFor={`my_modal_7_${book._id}`}
                       className="btn border-0 h-[2rem] min-h-[2rem] bg-[red] py-0 px-2 text-[wheat] hover:bg-[palevioletred]"
-                      onClick={() => deleteBook(book)}
+                      onClick={async() => await deleteUserBook(book._id)}
                     >
                       Remove
                     </label>
                   </div>
                 </div>
-                <label className="modal-backdrop" htmlFor={`my_modal_7_${book.$id}`}>Close</label>
+                <label className="modal-backdrop" htmlFor={`my_modal_7_${book._id}`}>Close</label>
               </div>
 
               <div className="p-4 card-img-div">
@@ -99,7 +94,7 @@ function Page({ currentUser }) {
                   </div>
                   <Link
                     className="btn border-[black] h-[33px] min-h-[33px] border-2 text-[black] hover:text-[white] hover:bg-[black]"
-                    href={`/book/${book.$id}/edit`}
+                    href={`/book/${book._id}/edit`}
                   >
                     Edit
                   </Link>
@@ -113,4 +108,4 @@ function Page({ currentUser }) {
   );
 }
 
-export default Protect(Page);
+export default Page;

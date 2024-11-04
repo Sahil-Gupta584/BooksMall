@@ -74,6 +74,10 @@
 }
 
 .btn {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
   padding: 10px 35px;
   cursor: pointer;
   background-color: #212121;

@@ -10,7 +10,7 @@ const Page = ({ searchParams }) => {
   const chatId = searchParams?.chatId;
   const sellerId = searchParams?.sellerId;
   const { currUser } = useSocket();
-  
+
   useLayoutEffect(() => {
     (async () => {
       if (searchParams.chatId) {
@@ -19,17 +19,17 @@ const Page = ({ searchParams }) => {
         
         const newChat = await getChat(chatId, sellerId , currUser._id);        
         setChat(newChat);
-        setisLoading(false);
+        // setisLoading(false);
       } else {
         console.log('initilChat:',false);
-        setisLoading(false)
+        // setisLoading(false)
       }
     })()
 
   }, [chatId, sellerId]);
 
   if (isLoading) {
-    return <div className="isLoading universal isLoading-spinner h-[91vh] w-[100vw] "></div>;
+    return <div className="isLoading universal isLoading-spinner h-[91vh] w-[100vw] loading loading-spinner"></div>;
   }
 
   if (!isLoading) {

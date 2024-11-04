@@ -67,6 +67,6 @@ export const SocketProvider = ({ children }) => {
     </SocketContext.Provider>)
   }
 
-  return <div className="isLoading universal isLoading-spinner h-[91vh] w-[100vw] "></div>;
+  return <div className="universal loading loading-spinner h-[91vh] w-[100vw] "></div>;
 
 };

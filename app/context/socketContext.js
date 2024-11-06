@@ -28,11 +28,10 @@ export const SocketProvider = ({ children }) => {
     });
 
     console.log('connecting to socket!');
-    
     socketInstance.on("connect", async () => {
       const user = await getCurrUser();
-      console.log('connected to socket!');
       setCurrUser(user)
+      console.log('connected to socket!');
       setIsConnected(true);
 
       if (typeof window !== 'undefined') {

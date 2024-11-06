@@ -58,7 +58,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             data: {
                                 name,
                                 email,
-                                avatarUrl:image,
                             }
                         });
                         console.log('newUser:', newUser);

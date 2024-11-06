@@ -46,6 +46,8 @@ export function ChatProvider({ children }) {
             if (!isExistingChat) {
                 console.log('adding new chat to user!');
                 await addChatToUser(currUser._id, newMessage.chatId);
+                window.location.reload()
+
             }
         }
     };
@@ -65,7 +67,6 @@ export function ChatProvider({ children }) {
 
     useEffect(() => {
         (async () => {
-            console.log('user', currUser);
             if (currUser?.chats) setChats(currUser.chats);
         })();
     }, [currUser]);

@@ -55,7 +55,7 @@ const Feedback = () => {
                                 minLength: { value: 3, message: "Dude dont play, enter valid title!" }
                             })}
                             id='title'
-                            className='p-2 outline-none border-[gray] border-[1px] rounded-lg'
+                            className='input input-bordered w-full input-primary mt-2'
                             placeholder='Title'
                         />
                         {errors.title && <p className='text-red-500 text-sm '>{errors.title.message}</p>}
@@ -71,7 +71,7 @@ const Feedback = () => {
                             name="description"
                             id="description"
                             placeholder='I wanted...'
-                            className='p-2 outline-none border-[gray] border-[1px] rounded-lg'>
+                            className='textarea textarea-primary mt-2'>
                         </textarea>
                         {errors.description && <p className='text-red-500 text-sm '>{errors.description.message}</p>}
 

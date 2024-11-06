@@ -6,10 +6,6 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    avatarUrl: {
-        type: String,
-        required: true,
-    },
     email: {
         type: String,
         required: true,
@@ -17,6 +13,7 @@ const UserSchema = new mongoose.Schema({
     chats:{
         type:[mongoose.Schema.Types.ObjectId],
         ref:'chats',
+        unique:true,
     }
 })
 

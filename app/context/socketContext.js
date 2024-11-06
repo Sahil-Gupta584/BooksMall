@@ -21,15 +21,19 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
 
 
-    const socketInstance = new ClientIO({
-      path: "/api/socket/io",
+    const socketInstance = new ClientIO("booksmall-server-production.up.railway.app", {
+      path: "/socket.io",
+      withCredentials: true,
+
     });
 
+    console.log('connecting to socket!');
+    
     socketInstance.on("connect", async () => {
-      
-      setIsConnected(true);
       const user = await getCurrUser();
+      console.log('connected to socket!');
       setCurrUser(user)
+      setIsConnected(true);
 
       if (typeof window !== 'undefined') {
         if (user) {

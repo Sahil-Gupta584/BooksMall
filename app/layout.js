@@ -19,7 +19,7 @@ export default async function RootLayout({ children }) {
     <html lang="en" data-theme="light" className="bg-[#f3eaea]">
       <body className={baloo.className}>
 
-        <SocketProvider >
+        <SocketProvider>
           <ChatProvider>
             <Nav />
             {children}

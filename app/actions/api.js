@@ -51,20 +51,20 @@ export async function submitFeedback(data) {
   }
 }
 
-export async function toggleUpvote(feedbackId,email) {
+export async function toggleUpvote(feedbackId, email) {
   try {
     await dbConnect()
-    
+
     let feedback = await Feedbacks.findById(feedbackId);
 
-    console.log('feedback',feedback);
-    
+    console.log('feedback', feedback);
+
     if (feedback.upVotedBy.includes(email)) {
       feedback.upVotedBy = feedback.upVotedBy.filter(e => e !== email);
-  } else {
+    } else {
       feedback.upVotedBy.push(email);
-  }
-  await feedback.save();
+    }
+    await feedback.save();
   } catch (error) {
     console.log(error, 'err from submitFeedback');
     throw error
@@ -73,12 +73,12 @@ export async function toggleUpvote(feedbackId,email) {
 
 export async function getFeedbacks() {
   try {
-    
+
     const res = await Feedbacks.find()
     return JSON.parse(JSON.stringify(res));
   } catch (error) {
-   console.log(error,'err in getFeedbacks');
-    
+    console.log(error, 'err in getFeedbacks');
+
   }
 }
 
@@ -238,9 +238,11 @@ export async function getCurrUser() {
   try {
     await dbConnect();
     const session = await auth();
+    console.log('session', session);
 
     if (session) {
       const user = await Users.findOne({ email: session.user.email }).populate({ path: 'chats', populate: { path: 'participants' } })
+      console.log('user', user);
       const parsed = JSON.parse(JSON.stringify(user))
       return parsed;
     } else {
@@ -304,9 +306,9 @@ export async function addChatToUser(currentUserId, chatId) {
 
     if (!user.chats.includes(chatId)) {
       user.chats.push([chatId]);
-      await user.save();
       console.log('Added new chat to user');
     }
+    await user.save();
   } catch (error) {
     console.log(error, 'from addChatToUser');
     throw error;

@@ -34,7 +34,7 @@ const Partner = ({ chat, currentUserId, info }) => {
       </svg>}
       <div className="avatar">
         <div className="w-12 rounded-full">
-          <img src={chatPartner?.avatarUrl} alt={chatPartner?.name} />
+          <img src={`https://api.multiavatar.com/${chatPartner.email}.svg`} alt='Photo' />
         </div>
       </div>
       <div className="ml-2">

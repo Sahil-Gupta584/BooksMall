@@ -19,10 +19,10 @@ const Page = ({ searchParams }) => {
         
         const newChat = await getChat(chatId, sellerId , currUser._id);        
         setChat(newChat);
-        // setisLoading(false);
+        setisLoading(false);
       } else {
         console.log('initilChat:',false);
-        // setisLoading(false)
+        setisLoading(false)
       }
     })()
 

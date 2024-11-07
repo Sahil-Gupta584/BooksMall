@@ -8,12 +8,17 @@ const protectedRoutes = [
     '/feedback',
 ]
 
+const isProtectedDynamicRoute = (pathname) => {
+    return /^\/book\/[^/]+\/edit$/.test(pathname);
+}
+
+
 export default auth((req) => {
     const { nextUrl } = req;
 
     const isAuthenticated = !!req.auth;
     console.log("isAuthenticated:- ", isAuthenticated)
-    const isProtectedRoute = protectedRoutes.includes(nextUrl.pathname);
+    const isProtectedRoute = protectedRoutes.includes(nextUrl.pathname)|| isProtectedDynamicRoute(nextUrl.pathname);
 
     if (!isAuthenticated && isProtectedRoute) {
         console.log('not authenticated')

@@ -9,13 +9,13 @@ import { useSocket } from '@/app/context/socketContext';
 
 function Page({ params }) {
     const [bookData, setBookData] = useState(null);
-    const { currUser,isConnected } = useSocket();
+    const { currUser, isConnected } = useSocket();
     useEffect(() => {
 
         (async () => {
             const book = await getBook(params.bookId);
-            console.log('book',book);
-            
+            console.log('book', book);
+
             const owner = await getUser(book.ownerId)
             setBookData({ ...book, seller: { ...owner } });
             console.log('book;', book);
@@ -81,47 +81,53 @@ function Page({ params }) {
                     <div className="md:col-span-1">
                         <div className="bg-white p-6 rounded-lg shadow-md">
                             <h2 className="text-3xl font-bold mb-4">₹ {bookData.price}</h2>
-                            {currUser && currUser._id !== bookData.seller._id ? (
-                                <Link
-                                    href={`/chat?chatId=${[currUser._id.slice(currUser._id.length / 2), bookData.seller._id.slice(bookData.seller._id.length / 2)].sort().join('')}&sellerId=${bookData.seller._id}`}
-                                    className="w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded">
 
-                                    Chat With Seller
-                                </Link>
-                            ) : (
+                            {!currUser ?
                                 <Link
+                                    href='/chat'
+                                    className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
+                                >
+                                    Chat With Seller
+                                </Link> : (currUser._id !== bookData.seller._id) ? <Link
+                                    href='/chat'
+                                    className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
+                                >
+                                    Chat With Seller
+                                </Link> : <Link
                                     href={`/book/${bookData._id}/edit`}
-                                    className='w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded'
+                                    className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
                                 >
                                     Edit
-                                </Link>
-                            )}
+                                </Link>}
                         </div>
                     </div>
                     <div className="md:col-span-1">
                         <div className="bg-white p-6 rounded-lg shadow-md w-fit">
                             <h2 className="text-3xl font-bold mb-4">Seller</h2>
-                            <div className="flex justify-start mb-4 items-center gap-2 ">
+                            <div className="flex justify-start mb-6 items-center gap-2 ">
                                 <div className="avatar">
                                     <div className="w-16 h-16 rounded-full">
                                         <img src={`https://api.multiavatar.com/${bookData.seller.email}.svg`} />
                                     </div>
                                 </div>
                                 <h2 className="font-bold ">
-                                    {bookData.seller.name? bookData.seller.name : bookData.seller.email}
+                                    {bookData.seller.name ? bookData.seller.name : bookData.seller.email}
                                 </h2>
                             </div>
 
-                            {currUser && currUser._id !== bookData.seller._id && (
-
+                            {!currUser ?
                                 <Link
-                                    href={`/chat/${[currUser._id, bookData.seller._id].sort().join('')}&sellerId=${bookData.seller._id}`}
-                                    className="w-full bg-white hover:bg-gray-100 text-[#d97f02] font-semibold py-2 px-4 border border-[#d97f02] rounded"
+                                    href='/chat'
+                                    className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
                                 >
                                     Chat With Seller
-                                </Link>
-                            )}
-
+                                </Link> : (currUser._id !== bookData.seller._id) ? <Link
+                                    href='/chat'
+                                    className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
+                                >
+                                    Chat With Seller
+                                </Link> : ''
+                            }
                         </div>
                     </div>
                 </div>

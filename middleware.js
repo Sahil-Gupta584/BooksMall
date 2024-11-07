@@ -6,6 +6,7 @@ const protectedRoutes = [
     '/sell',
     '/myselling',
     '/feedback',
+    '/chat',
 ]
 
 const isProtectedDynamicRoute = (pathname) => {

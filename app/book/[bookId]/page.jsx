@@ -14,6 +14,8 @@ function Page({ params }) {
 
         (async () => {
             const book = await getBook(params.bookId);
+            console.log('book',book);
+            
             const owner = await getUser(book.ownerId)
             setBookData({ ...book, seller: { ...owner } });
             console.log('book;', book);
@@ -110,7 +112,7 @@ function Page({ params }) {
                                 </h2>
                             </div>
 
-                            {currUser._id && currUser._id !== bookData.seller._id && (
+                            {currUser && currUser._id !== bookData.seller._id && (
 
                                 <Link
                                     href={`/chat/${[currUser._id, bookData.seller._id].sort().join('')}&sellerId=${bookData.seller._id}`}

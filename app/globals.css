@@ -73,7 +73,7 @@ html{
   .sell-btn {
     position: fixed;
     bottom: 3rem;
-    right: 31c%;
+    right: 31%;
     z-index: 1000;
   }
 

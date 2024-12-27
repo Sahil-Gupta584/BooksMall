@@ -86,7 +86,7 @@ function Page() {
               <div className="card-body">
                 <h2 className="text-600 text-ellipsis whitespace-nowrap">{book.title}</h2>
                 <span className="text-lg font-bold text-[#d97f02] block">{book.price}</span>
-                <span className="text-ellipsis whitespace-nowrap text-[rgba(0,47,52,0.64)]">{book.description}</span>
+                <span className="truncate text-[rgba(0,47,52,0.64)]">{book.description}</span>
                 <div className="card-actions justify-between items-center">
                   <div className="text-xs text-gray-500 mt-2">
                     <p className="my-2">{`${book.state}, ${book.city}`}</p>

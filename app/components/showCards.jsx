@@ -41,14 +41,6 @@ function ShowCards() {
                     ))}
                 </div>
             </div>
-            <div className="w-full">
-                <p className="font-bold text-center md:text-start">These are just some demo cards to see fully funtional Card make a new by clicking on SELL</p>
-                <div className="flex w-full flex-wrap justify-center md:justify-start">
-                    {imgUrls.map((e, i) => (
-                        <Card src={e.previewURL} key={i} />
-                    ))}
-                </div>
-            </div>
         </section>
         // </div>
     );

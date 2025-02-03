@@ -3,6 +3,7 @@ import { auth, signIn, signOut } from "@/auth";
 import cloudinary from './cloudinary';
 import { Books, Users, Chats, Messages, Feedbacks } from "@/mongodb/models";
 import { dbConnect } from "@/mongodb";
+import { pgClient } from "@/lib/db";
 
 export async function handleMagicLink(formdata) {
   await signIn('nodemailer', formdata)
@@ -136,7 +137,25 @@ export async function saveToDb(formdata) {
       ownerId
     };
 
+    const values = [
+      bookDetails.title,
+      bookDetails.category,
+      bookDetails.price,
+      bookDetails.condition,
+      bookDetails.description,
+      bookDetails.coverImageIndex,
+      bookDetails.bookImages, // Store array as JSON string
+      bookDetails.state,
+      bookDetails.city,
+      Math.floor(Date.now() / 1000),
+      3,
+    ];
+
     await dbConnect();
+    await pgClient.connect()
+    const createBookQuery = 'insert into books (title,category,price,condition,description,coverImageIndex,bookImages,state,city,timestamp,ownerId) values($1,$2,$3,$4,$5,$6,$7,$8,$9, TO_TIMESTAMP($10), $11) '
+    const res = await pgClient.query(createBookQuery, values)
+    console.log('res', res)
     const newBook = await Books.create(bookDetails);
 
     return true;
@@ -148,6 +167,8 @@ export async function saveToDb(formdata) {
 
 export async function updateBook(bookId, formdata) {
   try {
+    console.log('running')
+
     const bookData = JSON.parse(formdata.get('bookData'));
     const coverImageIndex = Number(formdata.get('coverImageIndex'));
     let urls = [];
@@ -163,10 +184,31 @@ export async function updateBook(bookId, formdata) {
         }
       }
     }
-
-    const bookDetails = { ...bookData, coverImageIndex, bookImages: urls, timestamp: Date.now().toString() };
-
+console.log('updating')
+const bookDetails = { ownerId:3,...bookData, coverImageIndex, bookImages: urls, timestamp: Math.floor(Date.now() / 1000) };
+delete bookDetails._id  
+delete bookDetails.__v
+    const values = [
+      '3',
+      'aaaaaaaaaaaa',
+      'fiction',
+      '1',
+      'new',
+      '11111111111111111111',
+      0,
+      [],
+      'Assam',
+      'Badarpur',
+      '1738597783131'
+    ]
+    console.log('bookDetails',bookDetails)
+    console.log('values',values)
     await dbConnect();
+    await pgClient.connect()
+    const updateQuery = `update books set ${Object.keys(bookDetails).map((key, i) => key==='timestamp'?`${key}=TO_TIMESTAMP($${i+1})`:`${key}=$${i + 1}`)} where id=1`
+    console.log('updateQuery',updateQuery)
+    const res = await pgClient.query(updateQuery, values)
+
     const updatedBook = await Books.findByIdAndUpdate(bookId, bookDetails, { new: true });
 
     return true;
@@ -202,6 +244,8 @@ export async function getUserBooks(userId) {
 
 export async function deleteUserBook(bookId) {
   try {
+    await pgClient.connect()
+    await pgClient.query('delete from books where id=1')
     await dbConnect();
     await Books.findByIdAndDelete(bookId);
     console.log('Book deleted');

@@ -21,11 +21,9 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
 
 
-    const socketInstance = new ClientIO("https://booksmall-server-production.up.railway.app/", {
+    const socketInstance = new ClientIO("http://localhost:3001/", {
       path: "/socket.io",
       withCredentials: true,
-      
-
     });
 
     console.log('connecting to socket!');

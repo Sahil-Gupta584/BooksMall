@@ -4,7 +4,7 @@ import Nodemailer from "next-auth/providers/nodemailer";
 import { dbConnect } from "./mongodb";
 import { Users } from "./mongodb/models";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import client from "./lib/db";
+import client, { pgClient } from "./lib/db";
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -42,8 +42,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 console.log('user from account', account)
                 console.log('user from Google', user)
                 try {
-                    await dbConnect();
+                    // await dbConnect();
+                    await pgClient.connect()
                     const { email, name, image, id } = user
+                    const createUserQuery = await pgClient.query('insert into users (name,email,image) values ($1,$2,$3)',[name,email,image])
+                    console.log('createUserQuery',createUserQuery)
                     const existingUser = await Users.findOne({
                         email
                     });

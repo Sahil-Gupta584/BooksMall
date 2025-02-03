@@ -193,7 +193,7 @@ const Sell = () => {
             <option value="like-new">Like New</option>
             <option value="very-good">Very Good</option>
             <option value="good">Good</option>
-            <option value="acceptable">Acceptable</option>
+            <option value=" ">Acceptable</option>
           </select>
         </div>
         <div className="mb-6">

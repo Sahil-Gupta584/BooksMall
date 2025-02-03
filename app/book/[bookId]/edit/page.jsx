@@ -77,7 +77,7 @@ const Page = ({ params }) => {
     e.preventDefault();
     console.log(bookData, images, coverImageIndex)
 
-    if (formRef.current.checkValidity() && images.length > 0) {
+    if (formRef.current.checkValidity()) {
       try {
         console.log("started");
 
@@ -127,7 +127,7 @@ const Page = ({ params }) => {
   }
   if (bookData) {
 
-    console.log('bookData:', bookData)
+    // console.log('bookData:', bookData)
     return (
       <div className="max-w-2xl mx-auto p-4">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">

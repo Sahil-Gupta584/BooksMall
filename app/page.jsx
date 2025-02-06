@@ -8,13 +8,14 @@ export default function Home() {
   const [showScroll, setShowScroll] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = async() => {
       if (window.scrollY > 300) {
         setShowScroll(true);
       } else {
         setShowScroll(false);
       }
     };
+
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);

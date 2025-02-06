@@ -4,7 +4,7 @@ import SellBtn from "./Sellbtn/SellBtn";
 import { usePathname, useRouter } from "next/navigation";
 import {  getCurrUser, logOut, verifyLogin } from "../actions/api";
 import Link from "next/link";
-import { getAllBooks } from "../actions/api"; // Ensure this is imported
+import { getBooks } from "../actions/api"; // Ensure this is imported
 import { useSocket } from "../context/socketContext";
 
 function Nav() {
@@ -17,7 +17,7 @@ function Nav() {
 
     useEffect(() => {
         async function fetchBooks() {
-            const allBooks = await getAllBooks();
+            const allBooks = await getBooks();
             setBooks(allBooks);
         }
         fetchBooks();

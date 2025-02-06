@@ -3,6 +3,7 @@ import "./globals.css";
 import Nav from "./components/Nav";
 import { SocketProvider } from "./context/socketContext";
 import { ChatProvider } from "./context/chatContext";
+import { SessionProvider } from 'next-auth/react';
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,6 +19,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="light" className="bg-[#f3eaea]">
       <body className={baloo.className}>
+      <SessionProvider>
 
         <SocketProvider>
           <ChatProvider>
@@ -25,6 +27,7 @@ export default async function RootLayout({ children }) {
             {children}
           </ChatProvider>
         </SocketProvider>
+      </SessionProvider>
 
       </body>
     </html>

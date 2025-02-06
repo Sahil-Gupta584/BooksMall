@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_URL")
+}
+
+enum MessageStatus {
+  sent
+  delivered
+  seen
+}
+
+enum BookCategory {
+  fiction
+  other
+  biography
+  sci_fi
+  mystery
+  non_fiction
+}
+
+enum BookCondition {
+  new
+  like_new
+  good
+  very_good
+  acceptable
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id               String     @id @default(cuid())
+  name             String?
+  email            String?    @unique
+  emailVerified    DateTime?  @map("email_verified")
+  image            String?
+  accounts         Account[]
+  sessions         Session[]
+  chats            Chat[]     @relation("UserChats")
+  books            Book[]     @relation("UserBooks")
+  feedbacks        Feedback[] @relation("UserFeedbacks")
+  upvotedFeedbacks Feedback[] @relation("UserUpvotes")
+  sentMessages     Message[]  @relation("UserSentMessages")
+  receivedMessages Message[]  @relation("UserReceivedMessages")
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Book {
+  id              Int           @id @default(autoincrement())
+  title           String
+  category        BookCategory
+  price           Int
+  condition       BookCondition
+  description     String
+  coverImageIndex Int
+  bookImages      String[]
+  state           String
+  city            String
+  timestamp       String
+  ownerId         String
+  owner           User          @relation("UserBooks", fields: [ownerId], references: [id])
+}
+
+model Chat {
+  id           Int       @id @default(autoincrement())
+  participants User[]    @relation("UserChats")
+  messages     Message[]
+}
+
+model Message {
+  id         Int           @id @default(autoincrement())
+  content    String
+  status     MessageStatus
+  timestamp  DateTime      @default(now())
+  chatId     Int
+  senderId   String
+  receiverId String
+  chat       Chat          @relation(fields: [chatId], references: [id])
+  sender     User          @relation("UserSentMessages", fields: [senderId], references: [id])
+  receiver   User          @relation("UserReceivedMessages", fields: [receiverId], references: [id])
+}
+
+model Feedback {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  userId      String
+  user        User   @relation("UserFeedbacks", fields: [userId], references: [id])
+  upvotedBy   User[] @relation("UserUpvotes")
+}

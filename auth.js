@@ -1,18 +1,18 @@
-import NextAuth, { CredentialsSignin } from "next-auth"
+import NextAuth from "next-auth"
 import Google from "next-auth/providers/google";
 import Nodemailer from "next-auth/providers/nodemailer";
-import { dbConnect } from "./mongodb";
-import { Users } from "./mongodb/models";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import client, { pgClient } from "./lib/db";
+import { PrismaAdapter } from "@auth/prisma-adapter"
+
+import { prisma } from "./lib/db";
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    adapter: MongoDBAdapter(client),
+    adapter: PrismaAdapter(prisma),
     providers: [
         Google({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
         }),
         Nodemailer({
             server: {
@@ -35,48 +35,70 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         signIn: '/auth',
     },
     callbacks: {
-        signIn: async ({ user, account, }) => {
-            console.log('AuthProvider:', account.provider);
+        async jwt({ token, user, trigger, session }) {
+            // console.log({ 'token':token, 'user':user, 'trigger':trigger, 'session':session });
 
-            if (account?.provider === "google") {
-                console.log('user from account', account)
-                console.log('user from Google', user)
-                try {
-                    // await dbConnect();
-                    await pgClient.connect()
-                    const { email, name, image, id } = user
-                    const createUserQuery = await pgClient.query('insert into users (name,email,image) values ($1,$2,$3)',[name,email,image])
-                    console.log('createUserQuery',createUserQuery)
-                    const existingUser = await Users.findOne({
-                        email
-                    });
+            // Initial sign in
+            if (user) {
+                token.sub = user.id;
+                token.email = user.email;
 
-                    if (existingUser) {
-
-                        console.log('existingUser:', existingUser);
-                        return true
-                    } else {
-
-                        const newUser = await Users.create({
-                            data: {
-                                name,
-                                email,
-                            }
-                        });
-                        console.log('newUser:', newUser);
-
-                        return true
-                    }
-                } catch (error) {
-                    console.log(error, 'err while Signing in user by ', account?.provider)
-                    return new CredentialsSignin("err while creating user");
+                // For email users, set default values if they don't exist
+                if (!token.picture) {
+                    token.picture = `https://api.multiavatar.com/${user.name}.svg`; // Default avatar
+                }
+                if (!token.name) {
+                    token.name = user.email?.split('@')[0]; // Use part of email as name
                 }
             }
 
-            if (account.provider === 'nodemailer') {
-                console.log('user from account nodemailer', account)
-                console.log('user from nodemailer', user)
-                return true
+            if (trigger === "update" && session) {
+                token.name = session.name;
+                token.picture = session.picture;
+            }
+
+            return token;
+        },
+        async session({ session, token }) {
+            if (session.user) {
+                session.user.id = token.sub;
+                session.user.email = token.email;
+                session.user.name = token.name;
+                session.user.image = token.picture;
+            }
+            return session;
+        },
+        async signIn({ user, account }) {
+            try {
+                if (account?.provider === "nodemailer") {
+                    const userProfile = await client.db().collection("users").findOneAndUpdate(
+                        { email: user.email },
+                        {
+                            $set: {
+                                email: user.email,
+                                name: user.email?.split('@')[0], // Default name from email
+                                image: `https://api.multiavatar.com/${user.name}.svg`, // Default avatar
+                                updatedAt: new Date(),
+                            },
+                            $setOnInsert: {
+                                createdAt: new Date(),
+                            }
+                        },
+                        {
+                            upsert: true,
+                            returnDocument: "after"
+                        }
+                    );
+
+                    if (userProfile && userProfile.value) {
+                        user.name = userProfile.value.name;
+                        user.image = userProfile.value.image;
+                    }
+                }
+                return true;
+            } catch (error) {
+                console.error("Error in signIn callback:", error);
+                return false;
             }
         },
 

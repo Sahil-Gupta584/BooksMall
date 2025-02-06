@@ -5,11 +5,11 @@ import Carousel from '@/app/components/Carousel/Carousel';
 import conditionIcon from '@/public/categories-img/conditionIco.webp';
 import categoryIcon from '@/public/categoryIcon.png';
 import Link from 'next/link';
-import { useSocket } from '@/app/context/socketContext';
+import { useSession } from 'next-auth/react';
 
 function Page({ params }) {
     const [bookData, setBookData] = useState(null);
-    const { currUser, isConnected } = useSocket();
+    const { data } = useSession();
     useEffect(() => {
 
         (async () => {
@@ -82,19 +82,19 @@ function Page({ params }) {
                         <div className="bg-white p-6 rounded-lg shadow-md">
                             <h2 className="text-3xl font-bold mb-4">₹ {bookData.price}</h2>
 
-                            {!currUser ?
+                            {!data?.user ?
                                 <Link
                                     href='/chat'
                                     className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
                                 >
                                     Chat With Seller
-                                </Link> : (currUser._id !== bookData.seller._id) ? <Link
+                                </Link> : (data?.user.id !== bookData.seller.id) ? <Link
                                     href='/chat'
                                     className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
                                 >
                                     Chat With Seller
                                 </Link> : <Link
-                                    href={`/book/${bookData._id}/edit`}
+                                    href={`/book/${bookData.id}/edit`}
                                     className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
                                 >
                                     Edit
@@ -115,13 +115,13 @@ function Page({ params }) {
                                 </h2>
                             </div>
 
-                            {!currUser ?
+                            {!data?.user ?
                                 <Link
                                     href='/chat'
                                     className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
                                 >
                                     Chat With Seller
-                                </Link> : (currUser._id !== bookData.seller._id) ? <Link
+                                </Link> : (data?.user.id !== bookData.seller.id) ? <Link
                                     href='/chat'
                                     className="w-full bg-white hover:bg-[#d97f02] text-[#d97f02] hover:text-white font-semibold py-2 px-4 border border-[#d97f02] rounded transition"
                                 >

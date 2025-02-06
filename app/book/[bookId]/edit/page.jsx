@@ -3,15 +3,15 @@ import { useState, useRef, useEffect } from "react";
 import addPhoto from "@/public/addphoto.png";
 import { useRouter } from "next/navigation";
 import { CurrentLocation, CustomLocation } from "@/app/components/Location";
-import { getBook, getCurrUser, updateBook } from "@/app/actions/api.js";
-import { useSocket } from "@/app/context/socketContext";
+import { getBook, updateBook } from "@/app/actions/api.js";
+import { useSession } from "next-auth/react";
 
 const Page = ({ params }) => {
   const [coverImageIndex, setCoverImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const [isOwner, setIsOwner] = useState(true)
   const [bookData, setBookData] = useState(null);
-  const { currUser } = useSocket();
+  const { data } = useSession();
 
   const router = useRouter();
 
@@ -25,11 +25,11 @@ const Page = ({ params }) => {
 
       console.log({
         ownerId: book.ownerId,
-        currentUserId: user._id,
-        isOwner: book.ownerId === user._id
+        currentUserId: data?.user?.id,
+        isOwner: book.ownerId === data?.user?.id
       });
       
-      if (book.ownerId !== user._id) {
+      if (book.ownerId !== data?.user?.id) {
         setIsOwner(false)
       }
 
@@ -47,12 +47,6 @@ const Page = ({ params }) => {
 
       setImages([...book.bookImages]);
       setCoverImageIndex(book.coverImageIndex);
-      // console.log('done')
-      // console.log('bookData:', bookData)
-      // console.log('images:', images)
-
-
-      // console.log(images)
     })()
   }, [params.bookId])
 
@@ -85,7 +79,7 @@ const Page = ({ params }) => {
         formData.append("bookData", JSON.stringify(bookData));
         formData.append("coverImageIndex", coverImageIndex);
         formData.append("location", JSON.stringify(location));
-        formData.append("ownerId", currUser._id);
+        formData.append("ownerId", data.user.id);
 
         // Add all images to formData
         images.forEach((image, index) => {
@@ -227,8 +221,8 @@ const Page = ({ params }) => {
             >
               <option value="">Select condition</option>
               <option value="new">New</option>
-              <option value="like-new">Like New</option>
-              <option value="very-good">Very Good</option>
+              <option value="like_new">Like New</option>
+              <option value="very_good">Very Good</option>
               <option value="good">Good</option>
               <option value="acceptable">Acceptable</option>
             </select>

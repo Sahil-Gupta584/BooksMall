@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.7.2",
+    "@auth/prisma-adapter": "^2.7.4",
+    "@prisma/client": "^6.3.1",
     "appwrite": "^15.0.0",
     "axios": "^1.7.2",
     "cloudinary": "^2.5.1",

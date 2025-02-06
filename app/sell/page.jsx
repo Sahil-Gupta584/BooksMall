@@ -1,9 +1,10 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import addPhoto from "../../public/addphoto.png";
-import { getCurrUser, saveToDb } from "../actions/api.js";
+import { saveToDb } from "../actions/api.js";
 import { useRouter } from "next/navigation";
-import { CurrentLocation, CustomLocation } from "../components/Location";
+import {  CustomLocation } from "../components/Location";
+import { useSession } from 'next-auth/react';
 
 const Sell = () => {
   const [coverImageIndex, setCoverImageIndex] = useState(0);
@@ -19,12 +20,11 @@ const Sell = () => {
   });
 
   const formRef = useRef(null);
+  const {data} =  useSession();
   useEffect(() => {
-    (async () => {
-      const user = await getCurrUser();
-      setcurrUser(user)
-    })()
-  }, [])
+    console.log('data',data)
+      setcurrUser(data.user)
+  }, [data.user])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,7 +57,7 @@ const Sell = () => {
         formData.append("bookData", JSON.stringify(bookData));
         formData.append("coverImageIndex", coverImageIndex);
         formData.append("location", JSON.stringify(location));
-        formData.append("ownerId", currUser._id);
+        formData.append("ownerId", currUser.id);
 
         // Add all images to formData
         images.forEach((image, index) => {
@@ -146,9 +146,9 @@ const Sell = () => {
           >
             <option value="">Select a category</option>
             <option value="fiction">Fiction</option>
-            <option value="non-fiction">Non-Fiction</option>
+            <option value="non_fiction">Non-Fiction</option>
             <option value="mystery">Mystery</option>
-            <option value="sci-fi">Science Fiction</option>
+            <option value="sci_fi">Science Fiction</option>
             <option value="biography">Biography</option>
             <option value="other">Other</option>
           </select>
@@ -190,8 +190,8 @@ const Sell = () => {
           >
             <option value="">Select condition</option>
             <option value="new">New</option>
-            <option value="like-new">Like New</option>
-            <option value="very-good">Very Good</option>
+            <option value="like_new">Like New</option>
+            <option value="very_good">Very Good</option>
             <option value="good">Good</option>
             <option value=" ">Acceptable</option>
           </select>

@@ -3,7 +3,7 @@ import { getTimeElapsed } from "../resource";
 export default function BookCard({ book, src }) {
   return (
     <div className="group relative m-4 w-full max-w-[320px] overflow-hidden rounded-xl border-2 border-orange-500 bg-white bg-opacity-20 p-1 backdrop-blur-lg backdrop-filter transition-all duration-300 hover:shadow-xl sm:w-[200px] md:w-[250px]">
-      <a href={`/book/${book?._id}`} className="relative block overflow-hidden rounded-lg bg-white shadow-inner">
+      <a href={`/book/${book?.id}`} className="relative block overflow-hidden rounded-lg bg-white shadow-inner">
         <figure className="relative h-48 w-full overflow-hidden">
           <img
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"

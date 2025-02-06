@@ -3,7 +3,7 @@ import { auth, signIn, signOut } from "@/auth";
 import cloudinary from './cloudinary';
 import { Books, Users, Chats, Messages, Feedbacks } from "@/mongodb/models";
 import { dbConnect } from "@/mongodb";
-import { pgClient } from "@/lib/db";
+import { pgClient, prisma } from "@/lib/db";
 
 export async function handleMagicLink(formdata) {
   await signIn('nodemailer', formdata)
@@ -29,7 +29,7 @@ export async function verifyLogin() {
 
 export async function getUser(userId) {
   try {
-    const user = await Users.findById(userId)
+    const user = await prisma.user.findUnique({ where: { id: userId } })
     return JSON.parse(JSON.stringify(user));
   } catch (error) {
     console.log(error, 'from getUser');
@@ -148,16 +148,13 @@ export async function saveToDb(formdata) {
       bookDetails.state,
       bookDetails.city,
       Math.floor(Date.now() / 1000),
-      3,
+      // cm6t5t82c0000vha08wiisdvy,
     ];
-
-    await dbConnect();
-    await pgClient.connect()
-    const createBookQuery = 'insert into books (title,category,price,condition,description,coverImageIndex,bookImages,state,city,timestamp,ownerId) values($1,$2,$3,$4,$5,$6,$7,$8,$9, TO_TIMESTAMP($10), $11) '
-    const res = await pgClient.query(createBookQuery, values)
+    bookDetails.ownerId = 'cm6t5t82c0000vha08wiisdvy'
+    bookDetails.price = Number(bookDetails.price)
+    console.log('bookDetails', bookDetails)
+    const res = await prisma.book.create({ data: bookDetails })
     console.log('res', res)
-    const newBook = await Books.create(bookDetails);
-
     return true;
   } catch (err) {
     console.log(err.message, err, "from saveToDb");
@@ -184,33 +181,16 @@ export async function updateBook(bookId, formdata) {
         }
       }
     }
-console.log('updating')
-const bookDetails = { ownerId:3,...bookData, coverImageIndex, bookImages: urls, timestamp: Math.floor(Date.now() / 1000) };
-delete bookDetails._id  
-delete bookDetails.__v
-    const values = [
-      '3',
-      'aaaaaaaaaaaa',
-      'fiction',
-      '1',
-      'new',
-      '11111111111111111111',
-      0,
-      [],
-      'Assam',
-      'Badarpur',
-      '1738597783131'
-    ]
-    console.log('bookDetails',bookDetails)
-    console.log('values',values)
-    await dbConnect();
-    await pgClient.connect()
-    const updateQuery = `update books set ${Object.keys(bookDetails).map((key, i) => key==='timestamp'?`${key}=TO_TIMESTAMP($${i+1})`:`${key}=$${i + 1}`)} where id=1`
-    console.log('updateQuery',updateQuery)
-    const res = await pgClient.query(updateQuery, values)
+    console.log('updating')
+    const bookDetails = { ...bookData, coverImageIndex, bookImages: urls, timestamp: Date.now().toString() };
 
-    const updatedBook = await Books.findByIdAndUpdate(bookId, bookDetails, { new: true });
-
+    // console.log('bookDetails', bookDetails)
+    const res = await prisma.book.update({
+      where: {
+        id: Number(bookId)
+      },
+      data: bookDetails
+    })
     return true;
   } catch (err) {
     console.log(err.message, err, "from updateBook");
@@ -222,8 +202,7 @@ export async function getBook(bookId) {
   try {
     console.log('getbook just for you!');
 
-    await dbConnect();
-    const book = await Books.findById(bookId);
+    const book = await prisma.book.findUnique({ where: { id: Number(bookId) } });
     return JSON.parse(JSON.stringify(book));
   } catch (error) {
     console.log(error, 'from getBook');
@@ -231,24 +210,12 @@ export async function getBook(bookId) {
   }
 }
 
-export async function getUserBooks(userId) {
-  try {
-    await dbConnect();
-    const books = await Books.find({ ownerId: userId });
-    return JSON.parse(JSON.stringify(books));
-  } catch (err) {
-    console.log(err.message, err, "from getUserBooks");
-    throw err;
-  }
-}
 
 export async function deleteUserBook(bookId) {
   try {
-    await pgClient.connect()
-    await pgClient.query('delete from books where id=1')
-    await dbConnect();
-    await Books.findByIdAndDelete(bookId);
-    console.log('Book deleted');
+    
+    await prisma.book.delete({ where: { id: Number(bookId) } });
+    console.log('Book deleted',bookId);
     return true;
   } catch (error) {
     console.log(error.message, error, 'from deleteUserBook');
@@ -359,13 +326,47 @@ export async function addChatToUser(currentUserId, chatId) {
   }
 }
 
-export async function getAllBooks() {
+export async function getBooks(userId) {
   try {
-    await dbConnect();
-    const books = await Books.find().sort({ timestamp: 1 });
+    let books;
+    if (userId) {
+
+      books = await prisma.book.findMany({ where: { ownerId: userId } })
+    } else {
+      books = await prisma.book.findMany()
+
+    }
     return JSON.parse(JSON.stringify(books));
   } catch (error) {
-    console.log(error.message, error, 'from getAllBooks');
+    console.log(error.message, error, 'from getBooks');
     return false;
   }
 }
+
+export async function uploadAll() {
+  try {
+    console.log('started')
+    await dbConnect();
+    const mAllBooks = await Books.find();
+
+    // Convert Mongoose documents to plain objects
+    const booksData = mAllBooks.map((b) => {
+      const book = b.toObject(); // Convert to plain JS object
+      delete book._id;
+      delete book.__v;
+      book.ownerId = 'cm6t5t82c0000vha08wiisdvy';
+      book.category = book.category.replace(/-/g, '_');
+      book.price = Number(book.price)
+      return book;
+    });
+
+    console.log('updated booksData:', booksData[0]);
+
+    const books = await prisma.book.createMany({ data: booksData });
+    return JSON.parse(JSON.stringify(books));
+  } catch (error) {
+    console.log(error.message, 'from uploadAll');
+    return false;
+  }
+}
+

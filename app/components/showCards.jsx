@@ -2,31 +2,19 @@
 import { useEffect, useState } from "react";
 import Card from "./Card";
 import axios from "axios";
-import { getAllBooks } from "../actions/api";
+import { getBooks, uploadAll } from "../actions/api";
 
 function ShowCards() {
-    const [imgUrls, setImgUrls] = useState([]);
     const [books, setBooks] = useState([])
-    // fetch(
-    //     "https://pixabay.com/api/?key=28620166-8e945f735596b182a40ab2809&q=book&image_type=photo&pretty=true",
-    // )
-    //     .then((res) => res.json())
-    //     .then((data) => setImgUrls(data.hits.slice(0, 40)));
 
     useEffect(() => {
 
         (async () => {
-            console.log('occured4')
-            const allBooks = await getAllBooks();
+            const allBooks = await getBooks();
             console.log('allbooks:',allBooks);
             
             setBooks(allBooks)
-            const res = await axios.get("https://pixabay.com/api/?key=28620166-8e945f735596b182a40ab2809&q=book&image_type=photo&pretty=true")
-            setImgUrls(res.data.hits.slice(0, 40))
-            // console.log(res.data.hits.slice(0, 40))
         })()
-
-
     }, [])
 
 

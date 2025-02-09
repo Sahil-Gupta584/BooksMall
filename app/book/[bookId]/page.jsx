@@ -107,12 +107,19 @@ function Page({ params }) {
                             <div className="flex justify-start mb-6 items-center gap-2 ">
                                 <div className="avatar">
                                     <div className="w-16 h-16 rounded-full">
-                                        <img src={`https://api.multiavatar.com/${bookData.seller.email}.svg`} />
+                                        <img src={bookData.seller.image} />
                                     </div>
                                 </div>
-                                <h2 className="font-bold ">
-                                    {bookData.seller.name ? bookData.seller.name : bookData.seller.email}
-                                </h2>
+                                <ul className="font-bold ">
+                                    <li>
+
+                                        {bookData.seller.name}
+                                    </li>
+                                    <li className='text-gray-600 text-sm '>
+
+                                        {bookData.seller.email}
+                                    </li>
+                                </ul>
                             </div>
 
                             {!currUser ?

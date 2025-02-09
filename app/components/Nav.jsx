@@ -6,14 +6,15 @@ import {  getCurrUser, logOut, verifyLogin } from "../actions/api";
 import Link from "next/link";
 import { getAllBooks } from "../actions/api"; // Ensure this is imported
 import { useSocket } from "../context/socketContext";
+import { useSession } from "next-auth/react"
 
 function Nav() {
     const [books, setBooks] = useState([]); // To store all books
     const [searchQuery, setSearchQuery] = useState(""); // To store search input
     const [filteredBooks, setFilteredBooks] = useState([]); // To store filtered books
     const pathname = usePathname();
-    const {currUser}= useSocket();
-
+    // const {currUser}= useSocket();
+    const {data} = useSession()
 
     useEffect(() => {
         async function fetchBooks() {
@@ -134,7 +135,7 @@ function Nav() {
                         tabIndex={0}
                         className="menu menu-sm dropdown-content rounded-md shadow-[rgba(0,0,0,0.25)_0px_54px_55px,rgba(0,0,0,0.12)_0px_-12px_30px,rgba(0,0,0,0.12)_0px_4px_6px,rgba(0,0,0,0.17)_0px_12px_13px,rgba(0,0,0,0.09)_0px_-3px_5px] z-[1] mt-3 w-fit p-2 bg-[wheat]"
                     >
-                        {!currUser ?
+                        {!data.user ?
                             (
                                 <li className="px-2 hover:text-[grey] hover:cursor-pointer">
                                     <Link
@@ -151,12 +152,12 @@ function Nav() {
                                     <div className="flex gap-2 mb-4">
                                         <div className="avatar">
                                             <div className="w-12 rounded-full">
-                                                <img src={`https://api.multiavatar.com/${currUser.email}.svg`} />
+                                                <img src={data.user.image} />
                                             </div>
                                         </div>
                                         <div className="flex flex-col justify-center">
-                                            <h2 className="font-bold ">{currUser?.name}</h2>
-                                            <p className="font-semibold  text-sm text-[rgba(0,47,52,0.64)]">{currUser?.email}</p>
+                                            <h2 className="font-bold ">{data.user?.name}</h2>
+                                            <p className="font-semibold  text-sm text-[rgba(0,47,52,0.64)]">{data.user?.email}</p>
 
                                         </div>
                                     </div>

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import SellBtn from "./Sellbtn/SellBtn";
 import { usePathname, useRouter } from "next/navigation";
-import {  getCurrUser, logOut, verifyLogin } from "../actions/api";
+import { getCurrUser, logOut, verifyLogin } from "../actions/api";
 import Link from "next/link";
 import { getAllBooks } from "../actions/api"; // Ensure this is imported
 import { useSocket } from "../context/socketContext";
@@ -14,7 +14,7 @@ function Nav() {
     const [filteredBooks, setFilteredBooks] = useState([]); // To store filtered books
     const pathname = usePathname();
     // const {currUser}= useSocket();
-    const {data} = useSession()
+    const { data } = useSession()
 
     useEffect(() => {
         async function fetchBooks() {
@@ -135,18 +135,7 @@ function Nav() {
                         tabIndex={0}
                         className="menu menu-sm dropdown-content rounded-md shadow-[rgba(0,0,0,0.25)_0px_54px_55px,rgba(0,0,0,0.12)_0px_-12px_30px,rgba(0,0,0,0.12)_0px_4px_6px,rgba(0,0,0,0.17)_0px_12px_13px,rgba(0,0,0,0.09)_0px_-3px_5px] z-[1] mt-3 w-fit p-2 bg-[wheat]"
                     >
-                        {!data.user ?
-                            (
-                                <li className="px-2 hover:text-[grey] hover:cursor-pointer">
-                                    <Link
-                                        prefetch
-                                        href="/auth"
-                                        className=" px-[18px] py-[4px] cursor-pointer hover:underline"
-                                    >
-                                        Login
-                                    </Link>
-                                </li>
-                            ) :
+                        {data && data.user ?
                             (
                                 <>
                                     <div className="flex gap-2 mb-4">
@@ -188,7 +177,22 @@ function Nav() {
                                         </button>
                                     </li>
                                 </>
-                            )}
+                            )
+                            :
+                            (
+                                <li className="px-2 hover:text-[grey] hover:cursor-pointer">
+                                    <Link
+                                        prefetch
+                                        href="/auth"
+                                        className=" px-[18px] py-[4px] cursor-pointer hover:underline"
+                                    >
+                                        Login
+                                    </Link>
+                                </li>
+                            )
+
+
+                        }
                     </section>
                 </div>
 

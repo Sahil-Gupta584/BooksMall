@@ -103,9 +103,6 @@ const CustomLocation = ({ location }) => {
 
     setAllCities(cities)
     console.log(cities);
-    // handleChange(selectedOption)
-    // Here you would typically fetch cities for the selected state
-    // and update allCities state
   };
 
   const handleCitySelect = (selectedOption) => {
@@ -137,7 +134,7 @@ const CustomLocation = ({ location }) => {
         isSearchable
         name='city'
         options={allCities}
-        value={selectedCity}
+        value={selectedCity}  
         onChange={handleCitySelect}
         placeholder='Select city'
         isDisabled={!selectedState}

@@ -9,7 +9,7 @@ import { useSocket } from '@/app/context/socketContext';
 
 function Page({ params }) {
     const [bookData, setBookData] = useState(null);
-    const { currUser, isConnected } = useSocket();
+    const { currUser } = useSocket();
     useEffect(() => {
 
         (async () => {

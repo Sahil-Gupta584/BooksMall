@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Nunito Sans", system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Merriweather", Georgia, serif;
+  }
+}
+
+@layer components {
+  .book-card {
+    @apply bg-white rounded-md overflow-hidden transition-all duration-300 
+           hover:shadow-book hover:-translate-y-1 cursor-pointer;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-500 text-white hover:bg-secondary-600 active:bg-secondary-700;
+  }
+
+  .btn-accent {
+    @apply bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent hover:bg-gray-100 text-gray-700;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-400;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+}
+
+.book-cover-shadow {
+  box-shadow: inset 0px -40px 20px -40px rgba(0, 0, 0, 0.7);
+}
+
+.chat-bubble-sender {
+  @apply bg-primary-100 rounded-tr-xl rounded-bl-xl rounded-br-xl;
+}
+
+.chat-bubble-receiver {
+  @apply bg-secondary-100 rounded-tl-xl rounded-bl-xl rounded-br-xl;
+}
+
+/* For creating a book spine effect */
+.book-spine {
+  position: relative;
+}
+
+.book-spine:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}

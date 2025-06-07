@@ -1,0 +1,24 @@
+import { betterAuth } from "better-auth";
+import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import dotenv from "dotenv";
+import { MongoClient } from "mongodb";
+
+dotenv.config();
+const client = new MongoClient(
+  "mongodb+srv://guptas3067:root123@cluster0.6yerxth.mongodb.net/Booksmall"
+);
+const db = client.db();
+
+export const auth = betterAuth({
+  database: mongodbAdapter(db),
+
+  trustedOrigins: ["http://localhost:5173"],
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      scope: ["openid", "profile", "email"],
+      redirectURI: "http://localhost:5173/api/auth/callback/google",
+    },
+  },
+});

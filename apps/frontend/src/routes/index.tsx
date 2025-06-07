@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import BookGallery from "../components/book/BookGallery";
 import FilterSidebar from "../components/FilterSidebar";
-import type { Book } from "./-types";
 
 const filterSchema = z.object({
   min: z.number().optional(),
@@ -31,7 +30,6 @@ export type TFilter = z.infer<typeof filterSchema>;
 function HomePage() {
   const { categories, condition, max, min, search } = Route.useSearch();
 
-  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [filter, setFilter] = useState<TFilter | null>({
     search: search,

@@ -42,7 +42,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const { mutateAsync, isPending: isSendingMessage } = useMutation({
     mutationFn: async ({ message }: { message: Message }) => {
-      return (await axios.post("/api/sendMessage", { message })).data;
+      return (await axios.post("/api/chats/sendMessage", { message })).data;
     },
   });
 

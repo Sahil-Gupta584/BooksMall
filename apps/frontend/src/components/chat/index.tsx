@@ -18,7 +18,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   const { isPending, isFetching } = useQuery({
     queryKey: ["getUserChats"],
     queryFn: async () => {
-      const response = await axios.post("/api/getUserChats", {
+      const response = await axios.post("/api/chats/getUserChats", {
         userId: data?.user.id,
       });
 
@@ -71,7 +71,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   //all the ws logics
   useEffect(() => {
     if (!data?.user.id) return;
-    const socket = new WebSocket("ws://localhost:8080");
+    const socket = new WebSocket("ws://localhost:3001");
     socket.onopen = () => {
       console.log("connected to socket");
       if (socket.readyState !== socket.OPEN) return;
@@ -132,7 +132,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
                 payload: { chat: activeChat, userId: data.user.id },
               })
             );
-            axios.post("/api/updateSeen", {
+            axios.post("/api/chats/updateSeen", {
               chat: activeChat,
               userId: data?.user.id,
             });
@@ -219,7 +219,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   const getChatMessagesQuery = useQuery({
     queryKey: ["getChatMessages"],
     queryFn: async (): Promise<Message[]> => {
-      const msgs = await axios.post("/api/getChatMessages", {
+      const msgs = await axios.post("/api/chats/getChatMessages", {
         chatId: activeChat?._id,
       });
       setMessages(msgs.data);

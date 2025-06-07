@@ -21,4 +21,5 @@ export const auth = betterAuth({
       redirectURI: "http://localhost:5173/api/auth/callback/google",
     },
   },
+  secret: process.env.AUTH_SECRET,
 });

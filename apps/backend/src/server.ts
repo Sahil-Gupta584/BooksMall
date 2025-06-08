@@ -18,32 +18,20 @@ const upload = multer({ storage });
 
 const app = express();
 
-console.log("process.env.VITE_FRONTEND_URL", process.env.VITE_FRONTEND_URL);
 app.use(
   cors({
-    origin: process.env.VITE_FRONTEND_URL, // Replace with your frontend's origin
-    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    origin: process.env.VITE_FRONTEND_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
 
 app.use((req, res, next) => {
   console.log(`[${req.method}] ${req.url}`);
   const headers = fromNodeHeaders(req.headers);
-  console.log("cookies", headers.get("cookie"));
-
   next();
 });
 
-app.get("/", (req, res) => {
-  res.cookie("authjs.session-token", "token", {
-    httpOnly: true,
-    secure: true, // 🔒 Must be true for cross-origin cookies over HTTPS
-    sameSite: "none", // 🎯 Allows cross-site cookie sending
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days or your desired session time
-  });
-  res.json("done");
-});
 app.all("/api/auth/*any", toNodeHandler(auth));
 
 const server = http.createServer(app);

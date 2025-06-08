@@ -11,7 +11,6 @@ export const auth = betterAuth({
   database: mongodbAdapter(db),
   trustedOrigins: [process.env.VITE_FRONTEND_URL!],
   advanced: {
-    // Option 2: Set attributes for cross-site use
     defaultCookieAttributes: {
       sameSite: "none",
       secure: true,

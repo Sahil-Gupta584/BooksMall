@@ -27,7 +27,10 @@ export default function Navbar() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ to: `/?search=${searchQuery}` });
+    navigate({
+      to: "/",
+      search: (prev) => ({ ...prev, search: searchQuery }),
+    });
   };
 
   return (
@@ -160,16 +163,23 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <div className="flex md:hidden items-center">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
-            >
-              {isMenuOpen ? (
-                <FaX className="block h-6 w-6" />
-              ) : (
-                <BiMenu className="block h-6 w-6" />
-              )}
-            </button>
+            {!data && (
+              <Link to="/sell" className="btn btn-primary">
+                Sell a Book
+              </Link>
+            )}
+            {data && (
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
+              >
+                {isMenuOpen ? (
+                  <FaX className="block h-6 w-6" />
+                ) : (
+                  <BiMenu className="block h-6 w-6" />
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -213,14 +223,6 @@ export default function Navbar() {
               Messages
             </Link>
 
-            {!data && (
-              <Link
-                to="/login"
-                className="hover:bg-primary-400 p-2 rounded-md transition hover:text-white"
-              >
-                Login
-              </Link>
-            )}
             {data && (
               <div className="space-y-2 mt-2">
                 <Link

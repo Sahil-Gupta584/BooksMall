@@ -6,22 +6,28 @@ const booksRouter = express.Router();
 
 booksRouter.get("/", async (req, res) => {
   try {
-    const { min, max } = req.query;
-
+    const { min, max, search } = req.query;
+    // const {}
     const conditions = req.query["condition[]"];
     const categories = req.query["categories[]"];
     const filter: mongoose.RootFilterQuery<any> = {};
     if (min || max) {
       filter.price = {};
-      if (min) filter.price.$gte = Number(min);
-      if (max) filter.price.$lte = Number(max);
+      if (min) filter.price.$gte = Number(min) || null;
+      if (max) filter.price.$lte = Number(max) || null;
     }
     if (categories) filter.categories = categories;
     if (conditions) filter.conditions = { $in: [conditions] };
+    if (search) {
+      const regex = new RegExp(search as string, "i"); // case-insensitive match
+      filter.$or = [{ title: regex }, { description: regex }];
+    }
 
     const books = await Books.find(filter).populate("owner");
     res.json(books);
   } catch (error) {
+    console.log(error);
+
     res.status(500).json(JSON.stringify(error));
   }
 });

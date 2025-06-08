@@ -32,7 +32,7 @@ function RouteComponent() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-8 max-w-[16rem] mx-auto sm:mx-auto sm:w-full sm:max-w-md">
         <div
           onClick={() =>
             signIn.social({
@@ -40,7 +40,7 @@ function RouteComponent() {
               callbackURL: import.meta.env.VITE_FRONTEND_URL,
             })
           }
-          className="bg-white hover:bg-gray-200 transition border cursor-pointer py-4  px-2 shadow-book sm:rounded-lg sm:px-10 flex items-center justify-center gap-4"
+          className="bg-white hover:bg-gray-200 transition border cursor-pointer py-4  px-4 shadow-book sm:rounded-lg sm:px-10 flex items-center justify-center gap-4"
         >
           <svg
             className="c-eSSyNk"

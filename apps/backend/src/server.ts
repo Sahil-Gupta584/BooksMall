@@ -36,6 +36,7 @@ app.use((req, res, next) => {
 
   next();
 });
+
 app.get("/", (req, res) => {
   res.cookie("authjs.session-token", "token", {
     httpOnly: true,
@@ -43,6 +44,7 @@ app.get("/", (req, res) => {
     sameSite: "none", // 🎯 Allows cross-site cookie sending
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days or your desired session time
   });
+  res.json("done");
 });
 app.all("/api/auth/*any", toNodeHandler(auth));
 

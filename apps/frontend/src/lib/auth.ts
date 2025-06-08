@@ -2,7 +2,7 @@ import { createAuthClient } from "better-auth/react";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const authClient: ReturnType<typeof createAuthClient> = createAuthClient(
-  { baseURL: backendUrl }
+  { baseURL: backendUrl, fetchOptions: { credentials: "include" } }
 );
 
 export const { useSession } = authClient;

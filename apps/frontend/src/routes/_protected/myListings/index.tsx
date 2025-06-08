@@ -36,7 +36,7 @@ function MyListingsPage() {
     enabled: !!data?.user.id,
   });
   const handleEdit = (bookId: string) => {
-    navigate({ to: `/listings/${bookId}/edit` });
+    navigate({ to: "/books/$bookId/edit", params: { bookId } });
   };
   const { mutateAsync } = useMutation({
     mutationKey: ["deleteBook"],

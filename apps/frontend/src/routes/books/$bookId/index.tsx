@@ -1,11 +1,11 @@
 import { addToast } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import axios from "axios";
 import { useEffect } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import BookDetails from "../../../components/book/BookDetails";
 import { useSession } from "../../../lib/auth";
+import { axiosInstance } from "../../../lib/axiosInstance";
 
 export const Route = createFileRoute("/books/$bookId/")({
   component: BookDetailsPage,
@@ -23,7 +23,8 @@ function BookDetailsPage() {
     data: book,
   } = useQuery({
     queryKey: ["bookDetails"],
-    queryFn: () => axios(`/api/books/${bookId}`).then((res) => res.data),
+    queryFn: () =>
+      axiosInstance.get(`/api/books/${bookId}`).then((res) => res.data),
   });
 
   useEffect(() => {

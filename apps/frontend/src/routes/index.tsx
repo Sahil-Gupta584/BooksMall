@@ -51,6 +51,7 @@ function HomePage() {
             categories: filter ? filter.categories : categories,
             search: filter ? filter.search : search,
           },
+          withCredentials: true,
         })
         .then((res) => res.data),
   });

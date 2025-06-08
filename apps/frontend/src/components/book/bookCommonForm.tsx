@@ -280,11 +280,11 @@ export function BookCommonForm({ prevData }: { prevData?: TPrevData }) {
                       htmlFor="price"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Price ($)*
+                      Price (₹)*
                     </label>
                     <div className="relative mt-1 rounded-md shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="text-gray-500 sm:text-sm">$</span>
+                        <span className="text-gray-500 sm:text-sm">₹</span>
                       </div>
                       <input
                         type="number"

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BiMessageSquare } from "react-icons/bi";
 import { useSession } from "../../lib/auth";
+import { axiosInstance } from "../../lib/axiosInstance";
 import type { Chat, Message, User } from "../../routes/-types";
 import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
@@ -18,7 +18,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   const { isPending, isFetching } = useQuery({
     queryKey: ["getUserChats"],
     queryFn: async () => {
-      const response = await axios.post("/api/chats/getUserChats", {
+      const response = await axiosInstance.post("/api/chats/getUserChats", {
         userId: data?.user.id,
       });
 
@@ -61,7 +61,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
         activeChat.participants.find((p) => p._id !== data?.user.id) as User
       );
       ws?.send(JSON.stringify({ type: "seen", payload: { chat: activeChat } }));
-      axios.post("/api/updateSeen", {
+      axiosInstance.post("/api/updateSeen", {
         chat: activeChat,
         userId: data?.user.id,
       });
@@ -132,7 +132,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
                 payload: { chat: activeChat, userId: data.user.id },
               })
             );
-            axios.post("/api/chats/updateSeen", {
+            axiosInstance.post("/api/chats/updateSeen", {
               chat: activeChat,
               userId: data?.user.id,
             });
@@ -219,7 +219,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   const getChatMessagesQuery = useQuery({
     queryKey: ["getChatMessages"],
     queryFn: async (): Promise<Message[]> => {
-      const msgs = await axios.post("/api/chats/getChatMessages", {
+      const msgs = await axiosInstance.post("/api/chats/getChatMessages", {
         chatId: activeChat?._id,
       });
       setMessages(msgs.data);

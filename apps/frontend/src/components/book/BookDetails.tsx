@@ -1,9 +1,9 @@
 import { addToast, Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import axios from "axios";
 import React, { useState } from "react";
 import { BiChevronLeft, BiChevronRight, BiMessageSquare } from "react-icons/bi";
+import { axiosInstance } from "../../lib/axiosInstance";
 import type { Book } from "../../routes/-types";
 
 interface BookDetailsProps {
@@ -20,7 +20,7 @@ const BookDetails: React.FC<BookDetailsProps> = ({ book, currentUserId }) => {
     mutationKey: ["handleChatWithSeller"],
     mutationFn: async () => {
       try {
-        const res = await axios.post("/api/createChat", {
+        const res = await axiosInstance.post("/api/createChat", {
           userId: currentUserId,
           sellerId: book.owner._id,
         });

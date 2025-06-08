@@ -2,11 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { addToast } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import BookGallery from "../components/book/BookGallery";
 import FilterSidebar from "../components/FilterSidebar";
+import { axiosInstance } from "../lib/axiosInstance";
 
 const filterSchema = z.object({
   min: z.number().optional(),
@@ -42,7 +42,7 @@ function HomePage() {
   const { isPending, error, data, refetch } = useQuery({
     queryKey: ["booksData"],
     queryFn: () =>
-      axios
+      axiosInstance
         .get("/api/books", {
           params: {
             min: filter ? filter.min : min,

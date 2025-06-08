@@ -1,12 +1,12 @@
 import { addToast } from "@heroui/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import axios from "axios";
 import { useState } from "react";
 import { BsTrash2 } from "react-icons/bs";
 import { FaPencil } from "react-icons/fa6";
 import { FiAlertCircle } from "react-icons/fi";
 import { useSession } from "../../../lib/auth";
+import { axiosInstance } from "../../../lib/axiosInstance";
 
 export const Route = createFileRoute("/_protected/myListings/")({
   component: MyListingsPage,
@@ -27,7 +27,7 @@ function MyListingsPage() {
   } = useQuery({
     queryKey: ["getMyListings"],
     queryFn: async () => {
-      const books = await axios.post("/api/books/myBooks", {
+      const books = await axiosInstance.post("/api/books/myBooks", {
         userId: data?.user.id,
       });
       return books.data;
@@ -41,7 +41,9 @@ function MyListingsPage() {
   const { mutateAsync } = useMutation({
     mutationKey: ["deleteBook"],
     mutationFn: async ({ bookId }: { bookId: string }) =>
-      axios.post("/api/books/delete", { bookId }).then((res) => res.data),
+      axiosInstance
+        .post("/api/books/delete", { bookId })
+        .then((res) => res.data),
     onSuccess: () => {
       addToast({ title: "Book Deleted Successfully!", color: "success" });
       refetch();

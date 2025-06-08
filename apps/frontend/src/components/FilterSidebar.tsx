@@ -4,7 +4,7 @@ import { FaChevronDown } from "react-icons/fa";
 import { FaX } from "react-icons/fa6";
 import { LuSlidersHorizontal } from "react-icons/lu";
 import { z } from "zod";
-import { categories, conditions } from "../data/mockData";
+import { categories, conditions } from "../lib/data";
 import type { TFilter } from "../routes";
 
 interface FilterSidebarProps {

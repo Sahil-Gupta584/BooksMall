@@ -1,6 +1,6 @@
 import { addToast, Button } from "@heroui/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { BiChevronUp, BiMessageSquare } from "react-icons/bi";
 import { FaBug, FaLightbulb } from "react-icons/fa";
@@ -8,8 +8,9 @@ import { FiAlertCircle, FiSend, FiSettings } from "react-icons/fi";
 
 import { createFileRoute } from "@tanstack/react-router";
 import type { Feedback } from "../../-types";
-import { feedbackCategories } from "../../../data/mockData";
 import { useSession } from "../../../lib/auth";
+import { axiosInstance } from "../../../lib/axiosInstance";
+import { feedbackCategories } from "../../../lib/data";
 import { formatDistanceToNow } from "../../../utils/dateUtils";
 export const Route = createFileRoute("/_protected/feedbacks/")({
   component: FeedbackPage,
@@ -24,7 +25,8 @@ function FeedbackPage() {
   } = useQuery({
     queryKey: ["getFeedbacks"],
     queryFn: async () => {
-      return (await axios.get("/api/feedbacks/read")).data as Feedback[];
+      return (await axiosInstance.get("/api/feedbacks/read"))
+        .data as Feedback[];
     },
   });
 
@@ -44,7 +46,9 @@ function FeedbackPage() {
         category: formData.category,
         upvotedBy: [data?.user.id],
       };
-      const res = await axios.post("/api/feedbacks/create", { feedback });
+      const res = await axiosInstance.post("/api/feedbacks/create", {
+        feedback,
+      });
       console.log(res.data);
 
       if (res.data.ok) {
@@ -81,7 +85,7 @@ function FeedbackPage() {
         .includes(data?.user.id as string)
         ? "devote"
         : "upvote";
-      return await axios.post(`/api/feedbacks/${path}`, {
+      return await axiosInstance.post(`/api/feedbacks/${path}`, {
         userId: data?.user.id,
         feedbackId,
       });

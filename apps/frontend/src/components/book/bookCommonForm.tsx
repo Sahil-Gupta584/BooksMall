@@ -5,10 +5,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import addPhoto from "../../assets/addphoto.png";
-import { categories, conditions } from "../../data/mockData";
 import { useSession } from "../../lib/auth";
+import { axiosInstance } from "../../lib/axiosInstance";
+import { categories, conditions, states } from "../../lib/data";
 import type { Book } from "../../routes/-types";
-import { states } from "../../utils/states";
 
 type TPrevData = {
   images: string[];
@@ -108,7 +108,7 @@ export function BookCommonForm({ prevData }: { prevData?: TPrevData }) {
             return;
           }
           form.append("image", new Blob([i.file], { type: i.file.type }));
-          const res = await axios.post("/api/fileToUrl", form);
+          const res = await axiosInstance.post("/api/fileToUrl", form);
 
           if (res.data.ok) {
             imageUrls.push(res.data.url);
@@ -116,7 +116,7 @@ export function BookCommonForm({ prevData }: { prevData?: TPrevData }) {
         })
       );
 
-      const bookRes = await axios.post(
+      const bookRes = await axiosInstance.post(
         `/api/books/${prevData ? "update" : "create"}`,
         {
           bookData: {

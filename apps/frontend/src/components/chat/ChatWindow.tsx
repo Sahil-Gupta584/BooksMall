@@ -1,11 +1,11 @@
 import { addToast, Button } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaCircle } from "react-icons/fa6";
 import { FiSend } from "react-icons/fi";
+import { axiosInstance } from "../../lib/axiosInstance";
 import type { Chat, Message, User } from "../../routes/-types";
 import { formatTime } from "../../utils/dateUtils";
 
@@ -42,7 +42,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const { mutateAsync, isPending: isSendingMessage } = useMutation({
     mutationFn: async ({ message }: { message: Message }) => {
-      return (await axios.post("/api/chats/sendMessage", { message })).data;
+      return (await axiosInstance.post("/api/chats/sendMessage", { message }))
+        .data;
     },
   });
 

@@ -1,5 +1,6 @@
 import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import console from "console";
+import parser from "cookie-parser";
 import cors from "cors";
 import { configDotenv } from "dotenv";
 import express from "express";
@@ -12,15 +13,14 @@ import { chatRouter } from "./controllers/chat";
 import { feedbackRouter } from "./controllers/feedback";
 import { Users } from "./db/modals";
 import { auth } from "./lib/auth";
-
 configDotenv();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const app = express();
 
+app.use(parser(process.env.AUTH_SECRET));
 console.log("process.env.VITE_FRONTEND_URL", process.env.VITE_FRONTEND_URL);
-
 app.use(
   cors({
     origin: process.env.VITE_FRONTEND_URL, // Replace with your frontend's origin
@@ -36,6 +36,7 @@ app.use((req, res, next) => {
 
   next();
 });
+
 app.all("/api/auth/*any", toNodeHandler(auth));
 
 const server = http.createServer(app);

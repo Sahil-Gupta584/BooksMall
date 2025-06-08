@@ -31,6 +31,7 @@ export default function Navbar() {
       to: "/",
       search: (prev) => ({ ...prev, search: searchQuery }),
     });
+    setIsMenuOpen(false); // hide menu after search
   };
 
   return (

@@ -32,7 +32,6 @@ function HomePage() {
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [filter, setFilter] = useState<TFilter | null>({
-    search: search,
     min: min,
     max: max,
     condition: condition,
@@ -49,9 +48,8 @@ function HomePage() {
             max: filter ? filter.max : max,
             condition: filter ? filter.condition : condition,
             categories: filter ? filter.categories : categories,
-            search: filter ? filter.search : search,
+            search: search,
           },
-          withCredentials: true,
         })
         .then((res) => res.data),
   });
@@ -64,7 +62,8 @@ function HomePage() {
         description: error.message,
       });
     }
-  }, [error]);
+    refetch();
+  }, [error, search]);
 
   useEffect(() => {
     if (filter) {
@@ -108,9 +107,7 @@ function HomePage() {
         <div className="flex-1 ">
           <div className="flex justify-between items-center mb-6 ">
             <h1 className="text-2xl font-serif font-bold text-gray-900">
-              {filter && filter.search
-                ? `Results for "${filter.search}"`
-                : "All Books"}
+              {search ? `Results for "${search}"` : "All Books"}
             </h1>
             <p className="text-sm text-gray-500">
               {isPending

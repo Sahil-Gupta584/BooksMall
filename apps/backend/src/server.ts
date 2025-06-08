@@ -18,11 +18,14 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const app = express();
+
+console.log("process.env.VITE_FRONTEND_URL", process.env.VITE_FRONTEND_URL);
+
 app.use(
   cors({
-    origin: [process.env.VITE_FRONTEND_URL!],
-    methods: ["GET", "POST"],
-    credentials: true,
+    origin: process.env.VITE_FRONTEND_URL, // Replace with your frontend's origin
+    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   })
 );
 

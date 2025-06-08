@@ -44,7 +44,8 @@ export function BookCommonForm({ prevData }: { prevData?: TPrevData }) {
   });
   useEffect(() => {
     if (!prevData) return;
-    setImages(prevData?.images.map((i) => ({ url: i })));
+    if (prevData && prevData.images)
+      setImages(prevData?.images.map((i) => ({ url: i })));
     setCoverImageIndex(prevData.coverImageIndex);
     setBookData({ ...prevData });
   }, [prevData]);

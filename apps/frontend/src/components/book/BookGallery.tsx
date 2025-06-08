@@ -32,7 +32,6 @@ const BookGallery: React.FC<BookGalleryProps> = ({ books, isPending }) => {
     );
   }
 
-  // Show message when no books match filter criteria
   if (Array.isArray(books) && books.length === 0) {
     return (
       <div className="text-center py-12">

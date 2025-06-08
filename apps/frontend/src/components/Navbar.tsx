@@ -246,7 +246,11 @@ export default function Navbar() {
 
                 <button
                   onClick={() => {
-                    signOut();
+                    signOut({
+                      fetchOptions: {
+                        onSuccess: () => navigate({ to: "/login" }),
+                      },
+                    });
                     setIsMenuOpen(false);
                   }}
                   className="flex items-center w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"

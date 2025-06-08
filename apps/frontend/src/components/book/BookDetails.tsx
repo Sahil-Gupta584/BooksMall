@@ -66,17 +66,19 @@ const BookDetails: React.FC<BookDetailsProps> = ({ book, currentUserId }) => {
           <div className="relative h-full min-h-[400px] md:min-h-0">
             {/* Main Image */}
             <div className="relative h-full overflow-hidden">
-              {book.images.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`${book.title} - Image ${index + 1}`}
-                  className={` absolute inset-0 h-full w-full object-cover transition-opacity duration-500
+              {book &&
+                book.images &&
+                book.images.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={`${book.title} - Image ${index + 1}`}
+                    className={` absolute inset-0 h-full w-full object-cover transition-opacity duration-500
       ${index === currentImageIndex ? "opacity-100 " : "opacity-0 z-0"}
     `}
-                  style={{ transition: "opacity 0.5s ease-in-out" }}
-                />
-              ))}
+                    style={{ transition: "opacity 0.5s ease-in-out" }}
+                  />
+                ))}
 
               {/* Navigation Arrows - Only show if more than 1 image */}
               {book.images.length > 1 && (

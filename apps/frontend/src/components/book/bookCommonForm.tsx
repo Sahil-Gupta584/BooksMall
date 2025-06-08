@@ -510,7 +510,7 @@ export function BookCommonForm({ prevData }: { prevData?: TPrevData }) {
                             <img
                               src={image.url}
                               alt={`Preview ${index + 1}`}
-                              className={`w-full h-32 object-cover rounded ${index === coverImageIndex ? "ring-4 ring-primary-500" : ""}`}
+                              className={`w-full h-32 object-cover rounded ${index === coverImageIndex ? "ring-4 ring-primary-900" : ""}`}
                             />
                             <button
                               type="button"

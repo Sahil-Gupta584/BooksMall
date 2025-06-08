@@ -6,6 +6,7 @@ import { MongoClient } from "mongodb";
 dotenv.config();
 const client = new MongoClient(process.env.MONGODB_URL!);
 const db = client.db();
+console.log("process.env.VITE_FRONTEND_URL", process.env.VITE_FRONTEND_URL);
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),

@@ -1,4 +1,4 @@
-import { toNodeHandler } from "better-auth/node";
+import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import console from "console";
 import cors from "cors";
 import { configDotenv } from "dotenv";
@@ -20,6 +20,9 @@ const upload = multer({ storage });
 const app = express();
 app.use((req, res, next) => {
   console.log(`[${req.method}] ${req.url}`);
+  const headers = fromNodeHeaders(req.headers);
+  console.log("cookies", headers.get("cookie"));
+
   next();
 });
 app.use(
@@ -132,7 +135,7 @@ app.post("/api/fileToUrl", upload.single("image"), async (req, res) => {
   }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
   console.log(`Socket.IO server running on port ${PORT}`);
 });

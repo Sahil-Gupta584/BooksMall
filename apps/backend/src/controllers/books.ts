@@ -1,3 +1,4 @@
+import console from "console";
 import express from "express";
 import mongoose from "mongoose";
 import { Books } from "../db/modals";
@@ -16,10 +17,19 @@ booksRouter.get("/", async (req, res) => {
       if (min) filter.price.$gte = Number(min) || null;
       if (max) filter.price.$lte = Number(max) || null;
     }
-    if (categories) filter.categories = categories;
-    if (conditions) filter.conditions = { $in: [conditions] };
+
+    if (categories)
+      filter.categories = {
+        $in: Array.isArray(categories) ? categories : [categories],
+      };
+
+    if (conditions)
+      filter.condition = {
+        $in: Array.isArray(conditions) ? conditions : [conditions],
+      };
+
     if (search) {
-      const regex = new RegExp(search as string, "i"); // case-insensitive match
+      const regex = new RegExp(search as string, "i");
       filter.$or = [{ title: regex }, { description: regex }];
     }
 

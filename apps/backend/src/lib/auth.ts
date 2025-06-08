@@ -12,7 +12,7 @@ const db = client.db();
 export const auth = betterAuth({
   database: mongodbAdapter(db),
 
-  trustedOrigins: [process.env.FRONTEND_URL!],
+  trustedOrigins: [process.env.VITE_FRONTEND_URL!],
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,

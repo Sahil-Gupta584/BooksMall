@@ -20,7 +20,7 @@ const upload = multer({ storage });
 const app = express();
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL!],
+    origin: [process.env.VITE_FRONTEND_URL!],
     methods: ["GET", "POST"],
     credentials: true,
   })
@@ -100,7 +100,6 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-app.get("/", (req, res) => res.redirect(process.env.FRONTEND_URL!));
 app.use("/api/books", booksRouter);
 app.use("/api/chats", chatRouter);
 app.use("/api/feedbacks", feedbackRouter);

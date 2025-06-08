@@ -143,7 +143,13 @@ export default function Navbar() {
                   <DropdownItem
                     key="logout"
                     startContent={<FaSignOutAlt className="text-red-500" />}
-                    onPress={() => signOut()}
+                    onPress={() =>
+                      signOut({
+                        fetchOptions: {
+                          onSuccess: () => navigate({ to: "/login" }),
+                        },
+                      })
+                    }
                   >
                     Logout
                   </DropdownItem>

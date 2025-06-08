@@ -37,6 +37,7 @@ function RouteComponent() {
           onClick={() =>
             signIn.social({
               provider: "google",
+              callbackURL: import.meta.env.VITE_FRONTEND_URL,
             })
           }
           className="bg-white hover:bg-gray-200 transition border cursor-pointer py-4  px-2 shadow-book sm:rounded-lg sm:px-10 flex items-center justify-center gap-4"

@@ -10,16 +10,16 @@ const db = client.db();
 export const auth = betterAuth({
   database: mongodbAdapter(db),
   trustedOrigins: [process.env.VITE_FRONTEND_URL!],
-  advanced: {
-    useSecureCookies: true,
+  // advanced: {
+  //   useSecureCookies: true,
 
-    // Option 2: Set attributes for cross-site use
-    defaultCookieAttributes: {
-      sameSite: "none",
-      secure: true,
-      partitioned: true, // complies with new browser policies
-    },
-  },
+  //   // Option 2: Set attributes for cross-site use
+  //   defaultCookieAttributes: {
+  //     sameSite: "none",
+  //     secure: true,
+  //     partitioned: true, // complies with new browser policies
+  //   },
+  // },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,

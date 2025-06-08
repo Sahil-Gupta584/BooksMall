@@ -1,6 +1,5 @@
 import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import console from "console";
-import parser from "cookie-parser";
 import cors from "cors";
 import { configDotenv } from "dotenv";
 import express from "express";
@@ -19,7 +18,6 @@ const upload = multer({ storage });
 
 const app = express();
 
-app.use(parser(process.env.AUTH_SECRET));
 console.log("process.env.VITE_FRONTEND_URL", process.env.VITE_FRONTEND_URL);
 app.use(
   cors({

@@ -9,7 +9,6 @@ const db = client.db();
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
-
   trustedOrigins: [process.env.VITE_FRONTEND_URL!],
   socialProviders: {
     google: {
@@ -19,4 +18,15 @@ export const auth = betterAuth({
     },
   },
   secret: process.env.AUTH_SECRET,
+  cookies: {
+    sessionToken: {
+      name: "better-auth.session_token",
+      options: {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        path: "/",
+      },
+    },
+  },
 });

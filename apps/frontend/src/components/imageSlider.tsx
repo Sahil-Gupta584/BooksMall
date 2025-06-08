@@ -88,7 +88,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
         {/* Thumbnails */}
         {images.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
-            {images.map((img, idx) => (
+            {images.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}

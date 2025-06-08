@@ -4,7 +4,7 @@ import z from "zod";
 import { Chats, Messages } from "../db/modals";
 const chatRouter = express.Router();
 
-chatRouter.post("/api/getUserChats", async (req, res) => {
+chatRouter.post("/getUserChats", async (req, res) => {
   try {
     const { userId } = req.body;
     if (!userId) throw new Error("User id is required");
@@ -37,7 +37,7 @@ chatRouter.post("/api/getUserChats", async (req, res) => {
   }
 });
 
-chatRouter.post("/api/getChatMessages", async (req, res) => {
+chatRouter.post("/getChatMessages", async (req, res) => {
   try {
     const { chatId } = req.body;
     if (!chatId) throw new Error("ChatId is required");
@@ -53,7 +53,7 @@ chatRouter.post("/api/getChatMessages", async (req, res) => {
     res.status(500).json(JSON.stringify(error));
   }
 });
-chatRouter.post("/api/sendMessage", async (req, res) => {
+chatRouter.post("/sendMessage", async (req, res) => {
   try {
     const { message } = req.body;
     delete message._id;
@@ -70,7 +70,7 @@ const createChatSchema = z.object({
   userId: z.string(),
   sellerId: z.string(),
 });
-chatRouter.post("/api/createChat", async (req, res) => {
+chatRouter.post("/createChat", async (req, res) => {
   try {
     const data = await createChatSchema.parseAsync(req.body);
     const { sellerId, userId } = data;
@@ -87,7 +87,7 @@ chatRouter.post("/api/createChat", async (req, res) => {
     res.status(500).json(JSON.stringify(error));
   }
 });
-chatRouter.post("/api/updateSeen", async (req, res) => {
+chatRouter.post("/updateSeen", async (req, res) => {
   try {
     const { chat, userId } = req.body;
     // const receiverObjId =

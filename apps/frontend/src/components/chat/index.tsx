@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BiMessageSquare } from "react-icons/bi";
-import { useSession } from "../../lib/auth";
+import { backendUrl, useSession } from "../../lib/auth";
 import { axiosInstance } from "../../lib/axiosInstance";
 import type { Chat, Message, User } from "../../routes/-types";
 import ChatList from "./ChatList";
@@ -61,7 +61,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
         activeChat.participants.find((p) => p._id !== data?.user.id) as User
       );
       ws?.send(JSON.stringify({ type: "seen", payload: { chat: activeChat } }));
-      axiosInstance.post("/api/updateSeen", {
+      axiosInstance.post("/api/chats/updateSeen", {
         chat: activeChat,
         userId: data?.user.id,
       });
@@ -71,7 +71,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   //all the ws logics
   useEffect(() => {
     if (!data?.user.id) return;
-    const socket = new WebSocket("ws://localhost:3001");
+    const socket = new WebSocket(backendUrl);
     socket.onopen = () => {
       console.log("connected to socket");
       if (socket.readyState !== socket.OPEN) return;
@@ -91,13 +91,8 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
           const userChat = userChatsRef.current?.find((c) =>
             c.participants.some((p) => p._id === userId)
           );
-          console.log("userChats", userChatsRef.current);
-          console.log("singlechat", userChat);
-
-          console.log(userId, "is online");
 
           if (!userChat) break;
-          console.log("updating chat");
 
           setUserChats((prev) =>
             prev
@@ -121,7 +116,6 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
           const msgChat = userChatsRef.current?.find(
             (c) => c._id === payload.message.chatId
           );
-          console.log("for chat", msgChat);
 
           if (!msgChat) return;
           if (msgChat._id === activeChat?._id) {

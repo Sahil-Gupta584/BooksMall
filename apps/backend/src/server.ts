@@ -100,6 +100,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+app.get("/", (req, res) => res.redirect(process.env.FRONTEND_URL!));
 app.use("/api/books", booksRouter);
 app.use("/api/chats", chatRouter);
 app.use("/api/feedbacks", feedbackRouter);
@@ -133,7 +134,7 @@ app.post("/api/fileToUrl", upload.single("image"), async (req, res) => {
   }
 });
 
-const PORT = 3001;
+const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`Socket.IO server running on port ${PORT}`);
 });

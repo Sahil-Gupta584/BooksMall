@@ -12,13 +12,12 @@ const db = client.db();
 export const auth = betterAuth({
   database: mongodbAdapter(db),
 
-  trustedOrigins: ["http://localhost:5173"],
+  trustedOrigins: [process.env.FRONTEND_URL!],
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       scope: ["openid", "profile", "email"],
-      redirectURI: "http://localhost:5173/api/auth/callback/google",
     },
   },
   secret: process.env.AUTH_SECRET,

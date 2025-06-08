@@ -37,7 +37,6 @@ function RouteComponent() {
           onClick={() =>
             signIn.social({
               provider: "google",
-              callbackURL: "http://localhost:5173",
             })
           }
           className="bg-white hover:bg-gray-200 transition border cursor-pointer py-4  px-2 shadow-book sm:rounded-lg sm:px-10 flex items-center justify-center gap-4"

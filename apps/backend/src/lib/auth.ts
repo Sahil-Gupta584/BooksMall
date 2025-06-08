@@ -4,9 +4,7 @@ import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 
 dotenv.config();
-const client = new MongoClient(
-  "mongodb+srv://guptas3067:root123@cluster0.6yerxth.mongodb.net/Booksmall"
-);
+const client = new MongoClient(process.env.MONGODB_URL!);
 const db = client.db();
 
 export const auth = betterAuth({

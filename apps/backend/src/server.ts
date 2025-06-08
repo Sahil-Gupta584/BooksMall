@@ -18,6 +18,10 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const app = express();
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.url}`);
+  next();
+});
 app.use(
   cors({
     origin: [process.env.VITE_FRONTEND_URL!],
@@ -92,11 +96,6 @@ async function main() {
 main()
   .then(() => console.log("connected to db"))
   .catch((err) => console.log("Error connecting db:", err));
-
-app.use((req, res, next) => {
-  console.log(`[${req.method}] ${req.url}`);
-  next();
-});
 
 app.use(express.json());
 

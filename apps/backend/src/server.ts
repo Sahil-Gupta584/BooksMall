@@ -18,13 +18,6 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const app = express();
-app.use((req, res, next) => {
-  console.log(`[${req.method}] ${req.url}`);
-  const headers = fromNodeHeaders(req.headers);
-  console.log("cookies", headers.get("cookie"));
-
-  next();
-});
 app.use(
   cors({
     origin: [process.env.VITE_FRONTEND_URL!],
@@ -32,6 +25,14 @@ app.use(
     credentials: true,
   })
 );
+
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.url}`);
+  const headers = fromNodeHeaders(req.headers);
+  console.log("cookies", headers.get("cookie"));
+
+  next();
+});
 app.all("/api/auth/*any", toNodeHandler(auth));
 
 const server = http.createServer(app);

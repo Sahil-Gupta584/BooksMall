@@ -36,7 +36,14 @@ app.use((req, res, next) => {
 
   next();
 });
-
+app.get("/", (req, res) => {
+  res.cookie("authjs.session-token", "token", {
+    httpOnly: true,
+    secure: true, // 🔒 Must be true for cross-origin cookies over HTTPS
+    sameSite: "none", // 🎯 Allows cross-site cookie sending
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days or your desired session time
+  });
+});
 app.all("/api/auth/*any", toNodeHandler(auth));
 
 const server = http.createServer(app);

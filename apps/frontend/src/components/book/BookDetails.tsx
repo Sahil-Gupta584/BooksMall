@@ -47,7 +47,6 @@ const BookDetails: React.FC<BookDetailsProps> = ({ book, currentUserId }) => {
     document.body.style.overflow = "unset";
   };
   if (!book) return <p>No book data found</p>;
-  console.log({ isFullscreen });
 
   return (
     <>

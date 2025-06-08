@@ -618,7 +618,7 @@ export function BookCommonForm({ prevData }: { prevData?: TPrevData }) {
                   >
                     {isSubmitting
                       ? prevData
-                        ? "Updating"
+                        ? "Updating..."
                         : "Submitting..."
                       : prevData
                         ? "Update book"

@@ -51,7 +51,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
 
       {/* Main Image */}
       <div
-        className={`relative ${fullscreen ? "h-full flex items-center justify-center" : "h-96"} w-full`}
+        className={`relative ${fullscreen ? "h-full flex items-center justify-center" : "h-full"} w-full`}
       >
         <img
           onClick={() => setIsFullscreen(true)}

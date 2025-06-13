@@ -1,5 +1,4 @@
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
-import { Analytics } from "@vercel/analytics/next"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
@@ -52,7 +51,6 @@ if (!rootElement.innerHTML) {
               },
             }}
           />
-          <Analytics/>
           <RouterProvider router={router} />
         </QueryClientProvider>
       </HeroUIProvider>

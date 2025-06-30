@@ -93,7 +93,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {data && (
+            {data && data.user && (
               <Dropdown>
                 <DropdownTrigger>
                   <button className="btn hover:btn-primary">

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import React from "react";
 import { FaCircle } from "react-icons/fa";
 import type { Chat } from "../../routes/-types";
-import { formatDistanceToNow } from "../../utils/dateUtils";
+import { formatTime } from "../../utils/dateUtils";
 
 interface ChatListProps {
   chats: Chat[];
@@ -36,7 +36,7 @@ const ChatListSkeleton = () => (
 const ChatList: React.FC<ChatListProps> = ({
   chats,
   currentUserId,
-  isLoading = false,
+  isLoading,
 }) => {
   const navigate = useNavigate();
 
@@ -114,9 +114,11 @@ const ChatList: React.FC<ChatListProps> = ({
                   <h3 className="text-sm font-medium text-gray-900 truncate">
                     {otherUser.name}
                   </h3>
-                  <span className="text-xs text-gray-500">
-                    {formatDistanceToNow(lastMessageTime)}
-                  </span>
+                  {lastMessageTime && (
+                    <span className="text-xs text-gray-500">
+                      {formatTime(new Date(lastMessageTime))}
+                    </span>
+                  )}
                 </div>
                 {chat.lastMessage && (
                   <p

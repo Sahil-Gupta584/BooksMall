@@ -22,7 +22,8 @@ const BookDetails: React.FC<BookDetailsProps> = ({ book, currentUserId }) => {
     mutationKey: ["handleChatWithSeller"],
     mutationFn: async () => {
       try {
-        const res = await axiosInstance.post("/api/createChat", {
+        if (!currentUserId) navigate({ to: "/login" });
+        const res = await axiosInstance.post("/api/chats/createChat", {
           userId: currentUserId,
           sellerId: book.owner._id,
         });

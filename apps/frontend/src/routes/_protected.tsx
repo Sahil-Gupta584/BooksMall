@@ -7,16 +7,7 @@ export const Route = createFileRoute("/_protected")({
 });
 
 export default function Protected() {
-  const { data, isPending } = useSession();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isPending) return;
-    if (!data?.user) {
-      navigate({ to: "/login" });
-    }
-  }, [isPending]);
-
+ 
   return (
     <>
       <Outlet />

@@ -1,23 +1,21 @@
+import serverlessExpress from "@codegenie/serverless-express";
 import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import console from "console";
 import cors from "cors";
-import { configDotenv } from "dotenv";
+import { config } from "dotenv";
 import express from "express";
-import http from "http";
 import mongoose from "mongoose";
 import multer from "multer";
-import WebSocket from "ws";
 import { booksRouter } from "./controllers/books";
 import { chatRouter } from "./controllers/chat";
 import { feedbackRouter } from "./controllers/feedback";
-import { Users } from "./db/modals";
 import { auth } from "./lib/auth";
-configDotenv();
+config({ path: "../../../.env" });
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const app = express();
-
+console.log("process.env.MONGODB_URL", process.env.MONGODB_URL);
 app.use(
   cors({
     origin: process.env.VITE_FRONTEND_URL,
@@ -33,64 +31,6 @@ app.use((req, res, next) => {
 });
 
 app.all("/api/auth/*any", toNodeHandler(auth));
-
-const server = http.createServer(app);
-
-const clients = new Map();
-
-const wss = new WebSocket.Server({ server });
-wss.on("connection", (ws) => {
-  console.log("ws started on 8080");
-
-  ws.on("message", async (data) => {
-    const { type, payload } = JSON.parse(data.toString());
-
-    switch (type) {
-      case "online":
-        clients.forEach((socket, userId) => {
-          socket.send(
-            JSON.stringify({
-              type: "online",
-              payload: { userId: payload.userId },
-            })
-          );
-        });
-        clients.set(payload.userId, ws);
-        break;
-      case "offline":
-        clients.delete(payload.userId);
-        const res = await Users.updateOne(
-          { _id: payload.userId },
-          { lastActive: payload.lastActive }
-        );
-
-        break;
-
-      case "message":
-        const recipientWs = clients.get(payload.message.receiver._id);
-
-        if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
-          recipientWs.send(JSON.stringify({ type: "message", payload }));
-        }
-      case "seen": {
-        const { chat, userId } = payload;
-        if (!chat || !chat._id || !userId) return;
-        const recipient = chat.participants.find(
-          (p: { _id: string }) => p._id !== userId
-        );
-
-        const recipientWs = clients.get(recipient._id);
-        if (!recipientWs) return;
-
-        if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
-          recipientWs.send(JSON.stringify({ type: "seen", payload }));
-        }
-      }
-      default:
-        break;
-    }
-  });
-});
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URL!);
@@ -135,7 +75,12 @@ app.post("/api/fileToUrl", upload.single("image"), async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT;
-server.listen(PORT, () => {
-  console.log(`Socket.IO server running on port ${PORT}`);
+app.get("/", (req, res) => {
+  res.send("Working");
 });
+const PORT = process.env.PORT;
+export default serverlessExpress({ app });
+
+// app.listen(PORT, () => {
+//   console.log(`server running on port ${PORT}`);
+// });

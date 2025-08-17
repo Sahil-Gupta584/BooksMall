@@ -1,0 +1,22 @@
+{
+  "name": "ws-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec tsx ./src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@repo/db": "*",
+    "@types/ws": "^8.18.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "nodemon": "^3.1.10",
+    "tsx": "^4.20.4",
+    "ws": "^8.18.0"
+  }
+}

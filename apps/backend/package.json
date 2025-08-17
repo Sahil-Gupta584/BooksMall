@@ -15,8 +15,11 @@
   ],
   "license": "APACHE-2.0",
   "dependencies": {
+    "@codegenie/serverless-express": "^4.17.0",
+    "@repo/db": "*",
     "@types/mongoose": "^5.11.96",
     "@types/ws": "^8.18.1",
+    "@vendia/serverless-express": "^4.12.6",
     "axios": "^1.8.4",
     "better-auth": "^1.2.8",
     "cookie-parser": "^1.4.7",

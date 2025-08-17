@@ -1,5 +1,5 @@
 import { Book } from "@/-types";
-import { useNavigate } from "@tanstack/react-router";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 interface BookCardProps {
@@ -7,10 +7,10 @@ interface BookCardProps {
 }
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleClick = () => {
-    navigate({ to: `/books/${book._id}` });
+    router.push(`/books/${book._id}`);
   };
   if (!book) return;
   return (

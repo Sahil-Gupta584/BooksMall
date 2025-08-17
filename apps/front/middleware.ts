@@ -5,17 +5,16 @@ const protectedPaths = ["/chats", "/feedbacks", "/myListings", "/sell"];
 export default async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
-  // Build full URL to your API route
-  const apiUrl = new URL("/api/user", req.nextUrl);
-  console.log(req.nextUrl, apiUrl.toString());
+  const apiUrl = new URL("/api/user", process.env.NEXT_PUBLIC_BACKEND_URL);
+  // console.log(apiUrl.href);
+  
   // Forward headers and cookies
-  const res = await fetch(apiUrl.toString(), {
+  const res = await fetch(apiUrl.href, {
     headers: {
-      ...Object.fromEntries(req.headers), // forward all headers
+      ...Object.fromEntries(req.headers),
     },
   });
   const session = await res.json();
-  console.log({ session });
   // Example usage:
   if (pathname === "/login" && session?.data?.user?.id) {
     return NextResponse.redirect(new URL("/", req.url));

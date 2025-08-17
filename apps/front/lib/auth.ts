@@ -1,7 +1,7 @@
-"use server";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
+import mongoose from "mongoose";
 
 const client = new MongoClient(process.env.MONGODB_URL!);
 const db = client.db();
@@ -35,3 +35,7 @@ export const auth = betterAuth({
     },
   },
 });
+
+export async function connectDb() {
+  await mongoose.connect(process.env.MONGODB_URL!);
+}

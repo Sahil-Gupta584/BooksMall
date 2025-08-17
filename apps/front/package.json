@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@heroui/react": "^2.7.6",
+    "@repo/db": "*",
     "@tanstack/react-query": "^5.79.0",
     "axios": "^1.9.0",
     "better-auth": "^1.2.8",
     "mongodb": "^6.18.0",
+    "mongoose": "^8.17.1",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -29,7 +31,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
-    "tailwindcss": "^4",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }

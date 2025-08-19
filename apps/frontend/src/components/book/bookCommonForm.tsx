@@ -382,9 +382,15 @@ export function BookCommonForm({ prevData }: { prevData?: TPrevData }) {
                 <div className="flex justify-end">
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn btn-primary disabled:bg-gray-400"
                     onClick={nextStep}
-                    disabled={(bookData.categories || []).length === 0}
+                    disabled={
+                      (bookData.categories || []).length === 0 ||
+                      bookData.title === "" ||
+                      bookData.price === 0 ||
+                      bookData.description === "" ||
+                      isPending
+                    }
                   >
                     Next
                   </button>

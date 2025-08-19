@@ -38,10 +38,10 @@ export const categories = [
 ];
 
 export const conditions = [
-  "New",
+  "new",
   "Like New",
   "Very Good",
-  "Good",
+  "good",
   "Fair",
   "Poor",
 ];

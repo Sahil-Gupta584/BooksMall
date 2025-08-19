@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import axios from "axios";
 import { BookCommonForm } from "../../../../components/book/bookCommonForm";
+import { axiosInstance } from "../../../../lib/axiosInstance";
 
 export const Route = createFileRoute("/books/$bookId/edit/")({
   component: RouteComponent,
@@ -12,7 +12,8 @@ function RouteComponent() {
 
   const { isPending, data } = useQuery({
     queryKey: ["bookDetails"],
-    queryFn: () => axios(`/api/books/${bookId}`).then((res) => res.data),
+    queryFn: () =>
+      axiosInstance.get(`/api/books/${bookId}`).then((res) => res.data),
   });
   return (
     <>

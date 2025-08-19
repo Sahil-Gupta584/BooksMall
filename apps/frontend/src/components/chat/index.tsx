@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BiMessageSquare } from "react-icons/bi";
-import { backendUrl, useSession } from "../../lib/auth";
+import { useSession, wsServerUrl } from "../../lib/auth";
 import { axiosInstance } from "../../lib/axiosInstance";
 import type { Chat, Message, User } from "../../routes/-types";
 import ChatList from "./ChatList";
@@ -42,9 +42,8 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
     return userChats?.find((chat) =>
       chat.participants.some((p) => p._id === sellerId)
     );
-  }, [userChats, sellerId, isFetching]);
+  }, [userChats, sellerId]);
 
-  //update events when activeChat changes
   useEffect(() => {
     userChatsRef.current = userChats;
 
@@ -71,7 +70,8 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   //all the ws logics
   useEffect(() => {
     if (!data?.user.id) return;
-    const socket = new WebSocket(backendUrl);
+
+    const socket = new WebSocket(wsServerUrl);
     socket.onopen = () => {
       console.log("connected to socket");
       if (socket.readyState !== socket.OPEN) return;
@@ -211,7 +211,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   }, [data?.user.id, activeChat]);
 
   const getChatMessagesQuery = useQuery({
-    queryKey: ["getChatMessages"],
+    queryKey: ["getChatMessages", activeChat?._id],
     queryFn: async (): Promise<Message[]> => {
       const msgs = await axiosInstance.post("/api/chats/getChatMessages", {
         chatId: activeChat?._id,

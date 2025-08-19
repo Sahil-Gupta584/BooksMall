@@ -4,4 +4,5 @@ import { backendUrl } from "./auth";
 export const axiosInstance = axios.create({
   baseURL: backendUrl,
   withCredentials: true,
+  headers: { "Content-Type": "application/json" },
 });

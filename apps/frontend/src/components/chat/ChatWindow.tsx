@@ -8,6 +8,7 @@ import { FiSend } from "react-icons/fi";
 import { axiosInstance } from "../../lib/axiosInstance";
 import type { Chat, Message, User } from "../../routes/-types";
 import { formatTime } from "../../utils/dateUtils";
+import { getStatusColor, getStatusText } from "./ChatList";
 
 interface ChatWindowProps {
   chatId: string;
@@ -93,32 +94,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const goBack = () => {
     navigate({ to: "/chats" });
-  };
-
-  const getStatusColor = (status: string | null) => {
-    switch (status) {
-      case "online":
-        return "text-green-500";
-      case "offline":
-        return "text-gray-400";
-      case "typing":
-        return "text-blue-500";
-      default:
-        return "text-gray-400";
-    }
-  };
-
-  const getStatusText = (status: string | null, lastActive: Date) => {
-    switch (status) {
-      case "online":
-        return "Online";
-      case "typing":
-        return "Typing...";
-      case "offline":
-        return `Last seen ${new Date(lastActive).toLocaleString()}`;
-      default:
-        return "Offline";
-    }
   };
 
   const groupedMessages = useMemo(() => {

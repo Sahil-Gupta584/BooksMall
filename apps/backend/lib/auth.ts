@@ -1,15 +1,13 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 
-dotenv.config();
 const client = new MongoClient(process.env.MONGODB_URL!);
 const db = client.db();
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
-  trustedOrigins: [process.env.VITE_FRONTEND_URL!],
+  trustedOrigins: [process.env.NEXT_PUBLIC_FRONTEND_URL!],
   advanced: {
     defaultCookieAttributes: {
       sameSite: "none",

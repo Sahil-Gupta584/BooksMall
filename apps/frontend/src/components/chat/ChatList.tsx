@@ -33,36 +33,38 @@ const ChatListSkeleton = () => (
   </div>
 );
 
+export const getStatusColor = (status: string | null) => {
+  switch (status) {
+    case "online":
+      return "text-green-500";
+    case "offline":
+      return "text-gray-400";
+    case "typing":
+      return "text-blue-500";
+    default:
+      return "text-gray-400";
+  }
+};
+
+export const getStatusText = (status: string | null, lastActive: Date) => {
+  switch (status) {
+    case "online":
+      return "Online";
+    case "typing":
+      return "Typing...";
+    case "offline":
+      return `Last seen ${new Date(lastActive).toLocaleString()}`;
+    default:
+      return "Offline";
+  }
+};
+
 const ChatList: React.FC<ChatListProps> = ({
   chats,
   currentUserId,
   isLoading,
 }) => {
   const navigate = useNavigate();
-
-  const getStatusColor = (status: string | null) => {
-    switch (status) {
-      case "online":
-        return "text-green-500";
-      case "offline":
-        return "text-gray-400";
-      case "typing":
-        return "text-blue-500";
-      default:
-        return "text-gray-400";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "online":
-        return "Online";
-      case "typing":
-        return "Typing...";
-      default:
-        return "Offline";
-    }
-  };
 
   if (isLoading) {
     return <ChatListSkeleton />;
@@ -93,9 +95,10 @@ const ChatList: React.FC<ChatListProps> = ({
         const lastMessageTime = otherUser?.lastActive || chat.updatedAt;
         if (!otherUser) return;
         return (
-          <div
+          <Link
             key={chat._id}
-            onClick={() => navigate({ to: `/chats/${otherUser._id}` })}
+            to={`/chats/$sellerId`}
+            params={{ sellerId: otherUser._id }}
             className="py-4 px-4 hover:bg-gray-50 cursor-pointer transition-colors"
           >
             <div className="flex items-start space-x-4">
@@ -136,7 +139,10 @@ const ChatList: React.FC<ChatListProps> = ({
                   </p>
                 )}
                 <p className="text-xs text-gray-500">
-                  {getStatusText(otherUser.status || "offline")}
+                  {getStatusText(
+                    otherUser.status as string,
+                    otherUser.lastActive
+                  )}
                 </p>
               </div>
               {chat.unreadCount > 0 &&
@@ -147,7 +153,7 @@ const ChatList: React.FC<ChatListProps> = ({
                   </span>
                 )}
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>

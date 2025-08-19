@@ -127,7 +127,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 </label>
                 <div className="relative mt-1 rounded-md">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                    $
+                    ₹
                   </span>
                   <input
                     type="number"
@@ -148,7 +148,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 </label>
                 <div className="relative mt-1 rounded-md">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                    $
+                    ₹
                   </span>
                   <input
                     type="number"

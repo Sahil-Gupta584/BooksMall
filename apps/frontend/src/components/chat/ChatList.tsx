@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import React from "react";
 import { FaCircle } from "react-icons/fa";
 import type { Chat } from "../../routes/-types";
@@ -64,8 +64,6 @@ const ChatList: React.FC<ChatListProps> = ({
   currentUserId,
   isLoading,
 }) => {
-  const navigate = useNavigate();
-
   if (isLoading) {
     return <ChatListSkeleton />;
   }

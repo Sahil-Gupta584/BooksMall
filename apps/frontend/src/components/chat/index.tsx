@@ -15,7 +15,7 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
   const userChatsRef = useRef<Chat[] | null>(null);
   const [ws, setWs] = useState<WebSocket | null>(null);
 
-  const { isPending, isFetching } = useQuery({
+  const { isPending } = useQuery({
     queryKey: ["getUserChats"],
     queryFn: async () => {
       const response = await axiosInstance.post("/api/chats/getUserChats", {

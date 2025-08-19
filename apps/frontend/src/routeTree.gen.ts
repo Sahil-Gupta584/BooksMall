@@ -8,184 +8,72 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProtectedRouteImport } from './routes/_protected'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as BooksBookIdIndexRouteImport } from './routes/books/$bookId/index'
+import { Route as ProtectedSellIndexRouteImport } from './routes/_protected/sell/index'
+import { Route as ProtectedMyListingsIndexRouteImport } from './routes/_protected/myListings/index'
+import { Route as ProtectedFeedbacksIndexRouteImport } from './routes/_protected/feedbacks/index'
+import { Route as ProtectedChatsIndexRouteImport } from './routes/_protected/chats/index'
+import { Route as BooksBookIdEditIndexRouteImport } from './routes/books/$bookId/edit/index'
+import { Route as ProtectedChatsSellerIdIndexRouteImport } from './routes/_protected/chats/$sellerId/index'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as ProtectedImport } from './routes/_protected'
-import { Route as IndexImport } from './routes/index'
-import { Route as LoginIndexImport } from './routes/login/index'
-import { Route as BooksBookIdIndexImport } from './routes/books/$bookId/index'
-import { Route as ProtectedSellIndexImport } from './routes/_protected/sell/index'
-import { Route as ProtectedMyListingsIndexImport } from './routes/_protected/myListings/index'
-import { Route as ProtectedFeedbacksIndexImport } from './routes/_protected/feedbacks/index'
-import { Route as ProtectedChatsIndexImport } from './routes/_protected/chats/index'
-import { Route as BooksBookIdEditIndexImport } from './routes/books/$bookId/edit/index'
-import { Route as ProtectedChatsSellerIdIndexImport } from './routes/_protected/chats/$sellerId/index'
-
-// Create/Update Routes
-
-const ProtectedRoute = ProtectedImport.update({
+const ProtectedRoute = ProtectedRouteImport.update({
   id: '/_protected',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const LoginIndexRoute = LoginIndexImport.update({
+const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const BooksBookIdIndexRoute = BooksBookIdIndexImport.update({
+const BooksBookIdIndexRoute = BooksBookIdIndexRouteImport.update({
   id: '/books/$bookId/',
   path: '/books/$bookId/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ProtectedSellIndexRoute = ProtectedSellIndexImport.update({
+const ProtectedSellIndexRoute = ProtectedSellIndexRouteImport.update({
   id: '/sell/',
   path: '/sell/',
   getParentRoute: () => ProtectedRoute,
 } as any)
-
-const ProtectedMyListingsIndexRoute = ProtectedMyListingsIndexImport.update({
-  id: '/myListings/',
-  path: '/myListings/',
-  getParentRoute: () => ProtectedRoute,
-} as any)
-
-const ProtectedFeedbacksIndexRoute = ProtectedFeedbacksIndexImport.update({
+const ProtectedMyListingsIndexRoute =
+  ProtectedMyListingsIndexRouteImport.update({
+    id: '/myListings/',
+    path: '/myListings/',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+const ProtectedFeedbacksIndexRoute = ProtectedFeedbacksIndexRouteImport.update({
   id: '/feedbacks/',
   path: '/feedbacks/',
   getParentRoute: () => ProtectedRoute,
 } as any)
-
-const ProtectedChatsIndexRoute = ProtectedChatsIndexImport.update({
+const ProtectedChatsIndexRoute = ProtectedChatsIndexRouteImport.update({
   id: '/chats/',
   path: '/chats/',
   getParentRoute: () => ProtectedRoute,
 } as any)
-
-const BooksBookIdEditIndexRoute = BooksBookIdEditIndexImport.update({
+const BooksBookIdEditIndexRoute = BooksBookIdEditIndexRouteImport.update({
   id: '/books/$bookId/edit/',
   path: '/books/$bookId/edit/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
 const ProtectedChatsSellerIdIndexRoute =
-  ProtectedChatsSellerIdIndexImport.update({
+  ProtectedChatsSellerIdIndexRouteImport.update({
     id: '/chats/$sellerId/',
     path: '/chats/$sellerId/',
     getParentRoute: () => ProtectedRoute,
   } as any)
 
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_protected': {
-      id: '/_protected'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof ProtectedImport
-      parentRoute: typeof rootRoute
-    }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_protected/chats/': {
-      id: '/_protected/chats/'
-      path: '/chats'
-      fullPath: '/chats'
-      preLoaderRoute: typeof ProtectedChatsIndexImport
-      parentRoute: typeof ProtectedImport
-    }
-    '/_protected/feedbacks/': {
-      id: '/_protected/feedbacks/'
-      path: '/feedbacks'
-      fullPath: '/feedbacks'
-      preLoaderRoute: typeof ProtectedFeedbacksIndexImport
-      parentRoute: typeof ProtectedImport
-    }
-    '/_protected/myListings/': {
-      id: '/_protected/myListings/'
-      path: '/myListings'
-      fullPath: '/myListings'
-      preLoaderRoute: typeof ProtectedMyListingsIndexImport
-      parentRoute: typeof ProtectedImport
-    }
-    '/_protected/sell/': {
-      id: '/_protected/sell/'
-      path: '/sell'
-      fullPath: '/sell'
-      preLoaderRoute: typeof ProtectedSellIndexImport
-      parentRoute: typeof ProtectedImport
-    }
-    '/books/$bookId/': {
-      id: '/books/$bookId/'
-      path: '/books/$bookId'
-      fullPath: '/books/$bookId'
-      preLoaderRoute: typeof BooksBookIdIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_protected/chats/$sellerId/': {
-      id: '/_protected/chats/$sellerId/'
-      path: '/chats/$sellerId'
-      fullPath: '/chats/$sellerId'
-      preLoaderRoute: typeof ProtectedChatsSellerIdIndexImport
-      parentRoute: typeof ProtectedImport
-    }
-    '/books/$bookId/edit/': {
-      id: '/books/$bookId/edit/'
-      path: '/books/$bookId/edit'
-      fullPath: '/books/$bookId/edit'
-      preLoaderRoute: typeof BooksBookIdEditIndexImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
-
-interface ProtectedRouteChildren {
-  ProtectedChatsIndexRoute: typeof ProtectedChatsIndexRoute
-  ProtectedFeedbacksIndexRoute: typeof ProtectedFeedbacksIndexRoute
-  ProtectedMyListingsIndexRoute: typeof ProtectedMyListingsIndexRoute
-  ProtectedSellIndexRoute: typeof ProtectedSellIndexRoute
-  ProtectedChatsSellerIdIndexRoute: typeof ProtectedChatsSellerIdIndexRoute
-}
-
-const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedChatsIndexRoute: ProtectedChatsIndexRoute,
-  ProtectedFeedbacksIndexRoute: ProtectedFeedbacksIndexRoute,
-  ProtectedMyListingsIndexRoute: ProtectedMyListingsIndexRoute,
-  ProtectedSellIndexRoute: ProtectedSellIndexRoute,
-  ProtectedChatsSellerIdIndexRoute: ProtectedChatsSellerIdIndexRoute,
-}
-
-const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
-  ProtectedRouteChildren,
-)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof ProtectedRouteWithChildren
   '/login': typeof LoginIndexRoute
   '/chats': typeof ProtectedChatsIndexRoute
   '/feedbacks': typeof ProtectedFeedbacksIndexRoute
@@ -195,10 +83,8 @@ export interface FileRoutesByFullPath {
   '/chats/$sellerId': typeof ProtectedChatsSellerIdIndexRoute
   '/books/$bookId/edit': typeof BooksBookIdEditIndexRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof ProtectedRouteWithChildren
   '/login': typeof LoginIndexRoute
   '/chats': typeof ProtectedChatsIndexRoute
   '/feedbacks': typeof ProtectedFeedbacksIndexRoute
@@ -208,9 +94,8 @@ export interface FileRoutesByTo {
   '/chats/$sellerId': typeof ProtectedChatsSellerIdIndexRoute
   '/books/$bookId/edit': typeof BooksBookIdEditIndexRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteWithChildren
   '/login/': typeof LoginIndexRoute
@@ -222,12 +107,10 @@ export interface FileRoutesById {
   '/_protected/chats/$sellerId/': typeof ProtectedChatsSellerIdIndexRoute
   '/books/$bookId/edit/': typeof BooksBookIdEditIndexRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | ''
     | '/login'
     | '/chats'
     | '/feedbacks'
@@ -239,7 +122,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | ''
     | '/login'
     | '/chats'
     | '/feedbacks'
@@ -262,7 +144,6 @@ export interface FileRouteTypes {
     | '/books/$bookId/edit/'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ProtectedRoute: typeof ProtectedRouteWithChildren
@@ -271,6 +152,101 @@ export interface RootRouteChildren {
   BooksBookIdEditIndexRoute: typeof BooksBookIdEditIndexRoute
 }
 
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof ProtectedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/$bookId/': {
+      id: '/books/$bookId/'
+      path: '/books/$bookId'
+      fullPath: '/books/$bookId'
+      preLoaderRoute: typeof BooksBookIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/sell/': {
+      id: '/_protected/sell/'
+      path: '/sell'
+      fullPath: '/sell'
+      preLoaderRoute: typeof ProtectedSellIndexRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/myListings/': {
+      id: '/_protected/myListings/'
+      path: '/myListings'
+      fullPath: '/myListings'
+      preLoaderRoute: typeof ProtectedMyListingsIndexRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/feedbacks/': {
+      id: '/_protected/feedbacks/'
+      path: '/feedbacks'
+      fullPath: '/feedbacks'
+      preLoaderRoute: typeof ProtectedFeedbacksIndexRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/chats/': {
+      id: '/_protected/chats/'
+      path: '/chats'
+      fullPath: '/chats'
+      preLoaderRoute: typeof ProtectedChatsIndexRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/books/$bookId/edit/': {
+      id: '/books/$bookId/edit/'
+      path: '/books/$bookId/edit'
+      fullPath: '/books/$bookId/edit'
+      preLoaderRoute: typeof BooksBookIdEditIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/chats/$sellerId/': {
+      id: '/_protected/chats/$sellerId/'
+      path: '/chats/$sellerId'
+      fullPath: '/chats/$sellerId'
+      preLoaderRoute: typeof ProtectedChatsSellerIdIndexRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+  }
+}
+
+interface ProtectedRouteChildren {
+  ProtectedChatsIndexRoute: typeof ProtectedChatsIndexRoute
+  ProtectedFeedbacksIndexRoute: typeof ProtectedFeedbacksIndexRoute
+  ProtectedMyListingsIndexRoute: typeof ProtectedMyListingsIndexRoute
+  ProtectedSellIndexRoute: typeof ProtectedSellIndexRoute
+  ProtectedChatsSellerIdIndexRoute: typeof ProtectedChatsSellerIdIndexRoute
+}
+
+const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedChatsIndexRoute: ProtectedChatsIndexRoute,
+  ProtectedFeedbacksIndexRoute: ProtectedFeedbacksIndexRoute,
+  ProtectedMyListingsIndexRoute: ProtectedMyListingsIndexRoute,
+  ProtectedSellIndexRoute: ProtectedSellIndexRoute,
+  ProtectedChatsSellerIdIndexRoute: ProtectedChatsSellerIdIndexRoute,
+}
+
+const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
+  ProtectedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ProtectedRoute: ProtectedRouteWithChildren,
@@ -278,66 +254,6 @@ const rootRouteChildren: RootRouteChildren = {
   BooksBookIdIndexRoute: BooksBookIdIndexRoute,
   BooksBookIdEditIndexRoute: BooksBookIdEditIndexRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/_protected",
-        "/login/",
-        "/books/$bookId/",
-        "/books/$bookId/edit/"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/_protected": {
-      "filePath": "_protected.tsx",
-      "children": [
-        "/_protected/chats/",
-        "/_protected/feedbacks/",
-        "/_protected/myListings/",
-        "/_protected/sell/",
-        "/_protected/chats/$sellerId/"
-      ]
-    },
-    "/login/": {
-      "filePath": "login/index.tsx"
-    },
-    "/_protected/chats/": {
-      "filePath": "_protected/chats/index.tsx",
-      "parent": "/_protected"
-    },
-    "/_protected/feedbacks/": {
-      "filePath": "_protected/feedbacks/index.tsx",
-      "parent": "/_protected"
-    },
-    "/_protected/myListings/": {
-      "filePath": "_protected/myListings/index.tsx",
-      "parent": "/_protected"
-    },
-    "/_protected/sell/": {
-      "filePath": "_protected/sell/index.tsx",
-      "parent": "/_protected"
-    },
-    "/books/$bookId/": {
-      "filePath": "books/$bookId/index.tsx"
-    },
-    "/_protected/chats/$sellerId/": {
-      "filePath": "_protected/chats/$sellerId/index.tsx",
-      "parent": "/_protected"
-    },
-    "/books/$bookId/edit/": {
-      "filePath": "books/$bookId/edit/index.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

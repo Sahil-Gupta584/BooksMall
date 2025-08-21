@@ -83,7 +83,6 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
 
     socket.onmessage = (event) => {
       const { type, payload } = JSON.parse(event.data);
-      console.log({ type, payload });
 
       switch (type) {
         case "online": {
@@ -100,8 +99,6 @@ export function ChatSection({ sellerId }: { sellerId: string }) {
                   if (c._id === userChat._id) {
                     c.participants.forEach((p) => {
                       if (p._id === userId) {
-                        console.log("updating status for user", p.email);
-
                         p.status = "online";
                       }
                     });

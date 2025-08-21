@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "start:backend": "turbo run start --filter=backend",
+    "start:ws-server": "turbo run start --filter=ws-server",
+    "build:ws-server": "turbo run build --filter=ws-server",
     "build:backend": "turbo run build --filter=backend",
     "dev": "turbo run dev",
     "lint": "turbo run lint",

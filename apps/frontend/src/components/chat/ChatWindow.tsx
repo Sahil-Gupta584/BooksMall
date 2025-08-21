@@ -211,7 +211,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <Button
             isLoading={isSendingMessage}
             type="submit"
-            className=" cursor-pointer rounded-full bg-primary-500 text-white disabled:opacity-50 hover:bg-primary-600 transition-colors"
+            className="flex cursor-pointer rounded-full bg-primary-500 text-white disabled:opacity-50 hover:bg-primary-600 transition-colors"
             isDisabled={!newMessage.trim()}
             isIconOnly
           >

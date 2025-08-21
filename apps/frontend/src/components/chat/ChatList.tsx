@@ -85,7 +85,7 @@ const ChatList: React.FC<ChatListProps> = ({
   }
 
   return (
-    <div className="divide-y divide-gray-200">
+    <div className="divide-y divide-gray-200 p-2">
       {chats.map((chat) => {
         const otherUser = chat.participants.find(
           (p) => p._id !== currentUserId

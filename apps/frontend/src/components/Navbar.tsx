@@ -100,7 +100,10 @@ export default function Navbar() {
                     <FaUser />
                   </button>
                 </DropdownTrigger>
-                <DropdownMenu aria-label="User Actions">
+                <DropdownMenu
+                  className="bg-gray-100 gap-2 drop-shadow-xl rounded-lg "
+                  aria-label="User Actions"
+                >
                   <DropdownItem key="profile">
                     <div className="flex items-center gap-2 border-b-2 pb-2 border-b-gray-400">
                       <img

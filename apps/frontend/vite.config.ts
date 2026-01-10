@@ -6,8 +6,7 @@ import { defineConfig } from "vite";
 export default defineConfig(() => {
   return {
     plugins: [
-      TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
-      react(),
+      TanStackRouterVite({ 
     ],
     optimizeDeps: {
       exclude: ["lucide-react"],

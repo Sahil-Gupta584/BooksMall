@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "start:ws-server": "turbo run start --filter=ws-server",
     "build:ws-server": "turbo run build --filter=ws-server",
-    "build:backend": "turbo run build --filter=backend",
+    "build:backend": "turbo run build --
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

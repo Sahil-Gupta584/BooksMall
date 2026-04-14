@@ -5,7 +5,7 @@ export const formatDistanceToNow = (date: Date): string => {
   );
 
   if (diffInSeconds < 60) {
-    return "just now";
+    return "just n
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
